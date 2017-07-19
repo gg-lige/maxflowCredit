@@ -1,10 +1,13 @@
 package lg.scala.utils
 
+import java.io.Serializable
+
 import lg.scala.entity.{EdgeAttr, VertexAttr}
 import org.apache.spark.{Partition, SparkContext}
 import org.apache.spark.graphx.{Edge, EdgeContext, Graph, VertexId}
 import org.apache.spark.rdd.RDD
 
+import scala.collection.mutable.Set
 import scala.collection.mutable.HashMap
 
 /**
@@ -129,89 +132,84 @@ object MaxflowCreditTools {
   /**
     * 计算最大流分数
     */
-  def run(extendPair: RDD[(VertexId, VertexId)], totalGraph: Graph[Double, Double], sc: SparkContext) = {
-    var allflow = 0D
-    var maxflowScore = HashMap[VertexId, Double]()
-    //选择社团编号为1-100的进行计算
-    extendPair.map(_._1).filter(_ <= 20).distinct.collect.foreach { x =>
-      val subV = extendPair.filter(_._1 == x).map(_._2).collect
-      var bcsubV = sc.broadcast(subV)
-      val sgraph = totalGraph.subgraph(vpred = (vid, vattr) => bcsubV.value.contains(vid)) //n步之内的子图
-      bcsubV.value.filter(_ != x).distinct.foreach { y =>
+  def run(extendPair: RDD[(VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]])], sc: SparkContext): Array[(VertexId, Double)] = {
+    var count = 0
+    extendPair.collect.map { case (vid, vAttr, eAttr) =>
+      var allflow = 0D
+      val vtemp = sc.parallelize(vAttr)
+      val etemp = sc.parallelize(eAttr)
+      val sgraph = Graph(vtemp, etemp)
+      vtemp.map(_._1).collect().filter(_ != vid).distinct.foreach { y =>
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
-        val flowtemp = maxflow(sc, sgraph, y, x)
+        val flowtemp = maxflow(sc, sgraph, y, vid)
         allflow += flowtemp._3
       }
-      maxflowScore.put(x, allflow)
+      count = count + 1
+      (vid, allflow)
     }
-    /*   val graph = extendPair.aggregateByKey(collection.mutable.Set[VertexId]())(
-         (set, vertex) => {
-           set += vertex
-         },
-         (set1, set2) => {
-           set1 ++= set2
-         }
-       )
-       val graphBroadcast = sc.broadcast(graph)
-       extendPair.filter(_._1 <= 100).distinct.map({ case (x, y) =>
-         val subV = graphBroadcast.value.filter(_._1 == x)
-         val flowtemp = maxflow(sc, sgraph, y, x)
-       })
-   */
-    /*
-
-    for (centerPair <- extendPair.map(_._2).distinct.collect) {
-         val subV = extendPair.filter(_._2 == centerPair).map(_._1).collect()
-         var bcsubV = sc.broadcast(subV)
-         //存储
-         val sgraph = totalGraph.subgraph(vpred = (vid, vattr) => bcsubV.value.contains(vid)) //3步之内的子图
-         //调用最大流算法计算pair节点n步之内所有节点对其传递值
-         for (src <- bcsubV.value.filter(_ != centerPair)) {
-           val flowtemp = maxflow(sc, sgraph, src, centerPair)
-           allflow += flowtemp._3
-         }
-         maxflowScore.put(centerPair, allflow)
-       }*/
-    maxflowScore
   }
 
   /**
-    * 各节点向外扩展步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
+    * 节点上存储边集（即子图）
     */
-  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], iteration: Int, selectTopN: Int = 6) = {
-    val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, Double)]](edge => {
-      edge.sendToSrc(Set((edge.dstId, edge.attr)))
-      edge.sendToDst(Set((edge.srcId, edge.attr)))
+  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 6): RDD[(VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]])] = {
+    val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
+      //发送的消息为：节点编号，(源终节点编号),边权重，节点属性，向源|终点发
+      triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
+      triple.sendToDst(Set((triple.srcId, triple.dstId, triple.attr, triple.srcAttr, true)))
     }, _ ++ _)
-
     val neighborVertex = neighbor.map { case (vid, vattr) =>
       if (vattr.size > selectTopN)
-        (vid, vattr.toSeq.sortBy(_._2)(Ordering[Double].reverse).slice(0, selectTopN).map(_._1).toSet)
+        (vid, vattr.toSeq.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
       else
-        (vid, vattr.map(_._1))
+        (vid, vattr)
     }.cache()
 
-    //一层邻居 （社团，包含节点）
-    val neighborPair1 = neighborVertex.map(x => (x._1, x._2 + x._1)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
+    //一层邻居 （社团，不包含节点自身）
+    val neighborPair1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
     //二层邻居
-    val neighborPair2 = neighborPair1.map(x => (x._2, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    val neighborPair2 = neighborPair1.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     //三层邻居
-    val neighborPair3 = neighborPair2.map(x => (x._2, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    val neighborPair3 = neighborPair2.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
-    neighborPair
+
+    val returnNeighbor = neighborPair.aggregateByKey(Set[(VertexId, VertexId, Double, Double, Boolean)]())(_ += _, _ ++ _)
+      .map { case (vid, vattr) =>
+        var e = HashMap[(VertexId, VertexId), Double]()
+        var v = HashMap[VertexId, Double]()
+
+        vattr.foreach { case (vSubId, vRelate, eWeight, vWeight, srcOrdst) =>
+          v.put(vSubId, vWeight)
+          if (srcOrdst == true)
+            e.put((vSubId, vRelate), eWeight)
+          else
+            e.put((vRelate, vSubId), eWeight)
+        }
+        if (!v.contains(vid)) {
+          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常
+          //      v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
+          v.put(vid, 0D)
+        }
+        val subVertex = v.toSeq
+        val subEdge = e.toSeq.map(e => Edge(e._1._1, e._1._2, e._2))
+
+        (vid, subVertex, subEdge)
+      }
+    returnNeighbor
   }
 
   /**
     * 修正图上的边权值（信息融合等原理）
     */
-  def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[Double, Double] = {
+  def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[(Double, Boolean), Double] = {
     val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion + e.attr.w_invest + e.attr.w_stockholder + e.attr.w_trade) / 4).edges
-    val vertextemp = tpin1.vertices.map(v => (v._1, v._2.xyfz / 100.0))
+    val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
     val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
     val vertexDegree = totalGraph.degrees.persist()
     Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
   }
 }
+
 
 /*
 
@@ -292,5 +290,67 @@ def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], maxIteration: Int)
 //    subgraphVertexPair.map(x=>(x._2,x._1)).groupByKey().map(x=>(x._2.size,x._1)).sortByKey().collect
     subgraphVertexPair
   }
+
+/**
+    * 各节点向外扩展步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
+    * 点上存的是该点所包含的子图相关节点，串行逐步构子图
+    */
+  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], iteration: Int, selectTopN: Int = 6) = {
+    val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, Double)]](edge => {
+      edge.sendToSrc(Set((edge.dstId, edge.attr)))
+      edge.sendToDst(Set((edge.srcId, edge.attr)))
+    }, _ ++ _)
+
+    val neighborVertex = neighbor.map { case (vid, vattr) =>
+      if (vattr.size > selectTopN)
+        (vid, vattr.toSeq.sortBy(_._2)(Ordering[Double].reverse).slice(0, selectTopN).map(_._1).toSet)
+      else
+        (vid, vattr.map(_._1))
+    }.cache()
+
+    //一层邻居 （社团，包含节点）
+    val neighborPair1 = neighborVertex.map(x => (x._1, x._2 + x._1)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
+    //二层邻居
+    val neighborPair2 = neighborPair1.map(x => (x._2, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    //三层邻居
+    val neighborPair3 = neighborPair2.map(x => (x._2, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
+    neighborPair
+  }
+
+  /**
+    * 修正图上的边权值（信息融合等原理）
+    */
+  def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[Double, Double] = {
+    val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion + e.attr.w_invest + e.attr.w_stockholder + e.attr.w_trade) / 4).edges
+    val vertextemp = tpin1.vertices.map(v => (v._1, v._2.xyfz / 100.0))
+    val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
+    val vertexDegree = totalGraph.degrees.persist()
+    Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
+  }
+}
+
+
+
+    /*
+
+     run方法
+     var allflow = 0D
+
+      var maxflowScore = HashMap[VertexId, Double]()
+      //选择社团编号为1-100的进行计算
+      extendPair.map(_._1).filter(_ <= 20).distinct.collect.foreach { x =>
+        val subV = extendPair.filter(_._1 == x).map(_._2).collect
+        var bcsubV = sc.broadcast(subV)
+        val sgraph = totalGraph.subgraph(vpred = (vid, vattr) => bcsubV.value.contains(vid)) //n步之内的子图
+        bcsubV.value.filter(_ != x).distinct.foreach { y =>
+          //调用最大流算法计算pair节点n步之内所有节点对其传递值
+          val flowtemp = maxflow(sc, sgraph, y, x)
+          allflow += flowtemp._3
+        }
+        maxflowScore.put(x, allflow)
+      }
+      maxflowScore*/
+
 
 */
