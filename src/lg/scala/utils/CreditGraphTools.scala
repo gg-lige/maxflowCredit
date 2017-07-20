@@ -21,6 +21,7 @@ object CreditGraphTools {
         val newVattr = VertexAttr(vattr.sbh, vattr.name)
         newVattr.xydj = vattr.xydj
         newVattr.xyfz = vattr.xyfz
+        newVattr.wtbz= vattr.wtbz
         newVattr
       }
       .mapEdges { edge =>

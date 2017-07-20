@@ -8,6 +8,7 @@ package lg.scala.entity
 class InitVertexAttr(var name: String, var sbh: String, var isNSR: Boolean) extends Serializable {
   var xydj: String = ""
   var xyfz: Int = 0
+  var wtbz: Boolean = false
 
   //字符串插值函数，表示可以使用$
   override def toString = s"InitVertexAttr($name,$sbh,$isNSR)"
@@ -16,6 +17,7 @@ class InitVertexAttr(var name: String, var sbh: String, var isNSR: Boolean) exte
 object InitVertexAttr {
   //初始化类时调用此方法
   def apply(name: String, sbh: String, isNSR: Boolean): InitVertexAttr = new InitVertexAttr(name, sbh.replace(".0", ""), isNSR)
+
   def combineNSRSBH(name1: String, name2: String): String = {
     var name = ""
     if (name1 != null) {
@@ -50,6 +52,6 @@ object InitVertexAttr {
   }
 
   def combine(a: InitVertexAttr, b: InitVertexAttr): InitVertexAttr = {
-    InitVertexAttr(combineNSRSBH(a.name,b.name), combineNSRSBH(a.sbh, b.sbh), a.isNSR && b.isNSR)
+    InitVertexAttr(combineNSRSBH(a.name, b.name), combineNSRSBH(a.sbh, b.sbh), a.isNSR && b.isNSR)
   }
 }

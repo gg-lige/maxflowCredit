@@ -186,7 +186,7 @@ object MaxflowCreditTools {
             e.put((vRelate, vSubId), eWeight)
         }
         if (!v.contains(vid)) {
-          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常
+          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常????
           //      v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
           v.put(vid, 0D)
         }

@@ -20,13 +20,25 @@ import scala.reflect.ClassTag
   * Created by lg on 2017/6/19.
   */
 object InputOutputTools {
-  def getRDDAsObjectFile[AD: ClassTag, BD: ClassTag](sc: SparkContext, path: String) = {
-    val RDDPair = sc.objectFile[(AD, BD)](path).repartition(128)
+  def saveRDDAsFile(sc: SparkContext, objectRdd: RDD[(VertexId, Double)], objectPath: String, textRdd: RDD[(VertexId, Double,Boolean)], textPath: String) = {
+    //检查hdfs中是否已经存在
+    val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
+    try {
+      hdfs.delete(new Path(objectPath), true)
+      hdfs.delete(new Path(textPath), true)
+    } catch {
+      case e: Throwable => e.printStackTrace()
+    }
+    objectRdd.saveAsObjectFile(objectPath)
+    textRdd.saveAsTextFile(textPath)
+  }
+
+  def get3RDDAsObjectFile[AD: ClassTag, BD: ClassTag, CD: ClassTag](sc: SparkContext, path: String) = {
+    val RDDPair = sc.objectFile[(AD, BD, CD)](path).repartition(128)
     RDDPair
   }
 
-
-  def saveRDDAsObjectFile[AD: ClassTag, BD: ClassTag](RDDPair: RDD[(AD, BD)], sc: SparkContext, path: String) = {
+  def save3RDDAsObjectFile[AD: ClassTag, BD: ClassTag, CD: ClassTag](RDDPair: RDD[(AD, BD, CD)], sc: SparkContext, path: String) = {
     //检查hdfs中是否已经存在
     val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
     try {
@@ -110,9 +122,9 @@ object InputOutputTools {
     val TZ_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_NSR_TZF"))).load()
     val GD_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_NSR_GD"))).load()
     val JY_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_XFNSR_GFNSR"))).load()
-    val XYJB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_GROUNDTRUTH"))).load()
+    val XYJB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_GROUNDTRUTH"))).load()
     val xyjb = XYJB_DF.select("VERTEXID", "XYGL_XYJB_DM", "FZ", "WTBZ").rdd
-      .map(row => (row.getAs[BigDecimal]("VERTEXID").longValue(), (row.getAs[BigDecimal]("FZ").intValue(), row.getAs[String]("XYGL_XYJB_DM"))))
+      .map(row => (row.getAs[BigDecimal]("VERTEXID").longValue(), (row.getAs[BigDecimal]("FZ").intValue(), row.getAs[String]("XYGL_XYJB_DM"), row.getAs[String]("WTBZ"))))
 
 
     //计算点表(先计算出所有纳税人节点，在计算所有非纳税人节点)
@@ -147,6 +159,8 @@ object InputOutputTools {
         if (!opt_fz_dm.isEmpty) {
           vattr.xyfz = opt_fz_dm.get._1
           vattr.xydj = opt_fz_dm.get._2
+          if (opt_fz_dm.get._3.equals("Y"))
+            vattr.wtbz = true
         }
         (vid, vattr)
       }.persist(StorageLevel.MEMORY_AND_DISK)

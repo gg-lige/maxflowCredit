@@ -1,0 +1,1655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="maxflowCredit:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4d706ed1-ef36-41d6-8610-4d06de49a350" name="Default" comment="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata.keystream" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata.keystream.len" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata.len" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata.values.at" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata_i" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_metadata_/metadata_i.len" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/_src_/schema/TAX.zip" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/artifacts/maxflowCredit_jar/maxflowCredit.jar" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/java/Parameters.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitEdgeAttr$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitEdgeAttr.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitVertexAttr$$anonfun$combineNSRSBH$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitVertexAttr$$anonfun$combineNSRSBH$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitVertexAttr$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/InitVertexAttr.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/MaxflowEdgeAttr$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/MaxflowEdgeAttr.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/VertexAttr$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/VertexAttr.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$main$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$10$$anonfun$apply$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$10.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$11.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$12.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$13.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$14.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$15.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$16.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$17.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$18.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$19.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$20.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$21.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22$$anonfun$apply$3$$anonfun$apply$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22$$anonfun$apply$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$23.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$4.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$5$$anonfun$25.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$5.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$26.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$27$$anonfun$apply$6.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$27.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$28.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$29.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$30.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$4.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$5.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$6.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$7.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$8.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$9.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$extractNSR$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$getPath$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPaths$1$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPathsReverse$1$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$10.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$11.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$12.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$13.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$14.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$15.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$16.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$17.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$18.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$19.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$20.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$21.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$22.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$23.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$24.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$25.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$26.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$27.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$28.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$29.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$30.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$31.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$32.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$33.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$34.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$35.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$36.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$4.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$5.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$6.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$7.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$8.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$$anonfun$9.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$11.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$12.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$13$$anonfun$14.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$13$$anonfun$15.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$13$$anonfun$apply$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$13.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$16.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$18.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$19.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$20$$anonfun$apply$5.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$20.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$21.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$22$$anonfun$apply$6.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$22.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$23.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$24.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$26.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$29$$anonfun$30.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$29$$anonfun$apply$7.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$29.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$31.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$32.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$33.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$4.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$5.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$6.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$7.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$9.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$fixEdgeWeight$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflow$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflow$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1$$anonfun$apply$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1$$anonfun$apply$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1$$anonfun$apply$4.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$1.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$2.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$3.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools.class" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dataSources/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/storage.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/InputCsv/edges.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/InputCsv/vertices.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/db.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/resources/InputCsv/edges.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/resources/InputCsv/vertices.csv" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/resources/db.properties" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/maxflowCredit.iml" afterPath="$PROJECT_DIR$/maxflowCredit.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala" afterPath="$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala" afterPath="$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala" afterPath="$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" />
+    </list>
+    <ignored path="$PROJECT_DIR$/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="@202.117.16.186" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="@202.117.16.186" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="TAX" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="@202.117.16.186" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="TAX" />
+        <option name="myItemType" value="com.intellij.database.view.DbNodeDescriptor" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$GroupNode" />
+      </PATH_ELEMENT>
+    </PATH>
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="maxflowCredit" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Main.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/main/Main.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="600">
+              <caret line="24" column="41" lean-forward="true" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
+              <folding>
+                <element signature="e#599#626#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MaxflowCreditTools.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="4500">
+              <caret line="188" column="49" lean-forward="false" selection-start-line="188" selection-start-column="49" selection-end-line="188" selection-end-column="49" />
+              <folding>
+                <element signature="e#24#51#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CreditGraphTools.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="16" column="6" lean-forward="false" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
+              <folding>
+                <element signature="e#25#100#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExperimentTools.scala" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="475">
+              <caret line="23" column="30" lean-forward="false" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InputOutputTools.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2625">
+              <caret line="118" column="0" lean-forward="false" selection-start-line="118" selection-start-column="0" selection-end-line="118" selection-end-column="0" />
+              <folding>
+                <element signature="e#24#51#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InitVertexAttr.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="3" column="31" lean-forward="false" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VertexAttr.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="250">
+              <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>TZ_ZJHM</find>
+      <find>to</find>
+      <find>flatmap</find>
+      <find>flatma</find>
+      <find>for</find>
+      <find>subgr</find>
+      <find>run</find>
+      <find>toSet</find>
+      <find>case</find>
+      <find>println</find>
+      <find>graph</find>
+      <find>residual</find>
+      <find>bcsubV</find>
+      <find>aggregateByKey</find>
+      <find>saveRDDAsObjectFile</find>
+      <find>wtbz</find>
+      <find>HA</find>
+      <find>GROUNDTRUTH</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="PUSH_TAGS">
+      <GitPushTagMode />
+    </option>
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/lg/resources/oracle.properties" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/maxflowCreditTool.scala" />
+        <option value="$PROJECT_DIR$/src/lg/java/Parameters.java" />
+        <option value="$PROJECT_DIR$/src/lg/resources/db.properties" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/NsrVertexAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/NsrEdgeAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/maxflowCreditTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCrditTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/resources/InputCsv/edges.csv" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/main/Main.scala" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-7" />
+    <option name="y" value="2" />
+    <option name="width" value="1932" />
+    <option name="height" value="1045" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="entity" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="maxflowCredit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15196393" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.intellij.database.dataSource.DataSourceTemplate" value="Oracle" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="lg.scala.entity" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="false" name="Scala Console" type="ScalaScriptConsoleRunConfiguration" factoryName="Scala Console" temporary="true">
+      <module name="maxflowCredit" />
+      <setting name="vmparams4" value="-Djline.terminal=NONE" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="consoleArgs" value="-usejavacp" />
+      <method />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file id="idea.log" enabled="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="" />
+      <option name="DEPLOY" value="true" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <Java />
+      <Profilers>
+        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
+        <option name="GAPID_ENABLED" value="false" />
+        <option name="GAPID_DISABLE_PCS" value="false" />
+        <option name="SUPPORT_LIB_ENABLED" value="true" />
+        <option name="INSTRUMENTATION_ENABLED" value="true" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="EXTRA_OPTIONS" value="" />
+      <option name="TARGET_SELECTION_MODE" value="SHOW_DIALOG" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="DEBUGGER_TYPE" value="Java" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <Java />
+      <Profilers>
+        <option name="ENABLE_ADVANCED_PROFILING" value="true" />
+        <option name="GAPID_ENABLED" value="false" />
+        <option name="GAPID_DISABLE_PCS" value="false" />
+        <option name="SUPPORT_LIB_ENABLED" value="true" />
+        <option name="INSTRUMENTATION_ENABLED" value="true" />
+      </Profilers>
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <module />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Cold Fusion runner description" factoryName="Cold Fusion" custom_browser="" web_path="">
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="myFilePath" />
+      <option name="GLUE" />
+      <option name="myNameFilter" />
+      <option name="myGeneratedName" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="FlashRunConfigurationType" factoryName="Flash App">
+      <option name="BCName" value="" />
+      <option name="IOSSimulatorSdkPath" value="" />
+      <option name="adlOptions" value="" />
+      <option name="airProgramParameters" value="" />
+      <option name="appDescriptorForEmulator" value="Android" />
+      <option name="debugTransport" value="USB" />
+      <option name="debuggerSdkRaw" value="BC SDK" />
+      <option name="emulator" value="NexusOne" />
+      <option name="emulatorAdlOptions" value="" />
+      <option name="fastPackaging" value="true" />
+      <option name="fullScreenHeight" value="0" />
+      <option name="fullScreenWidth" value="0" />
+      <option name="launchUrl" value="false" />
+      <option name="launcherParameters">
+        <LauncherParameters>
+          <option name="browser" value="a7bb68e0-33c0-4d6f-a81a-aac1fdb870c8" />
+          <option name="launcherType" value="OSDefault" />
+          <option name="newPlayerInstance" value="false" />
+          <option name="playerPath" value="FlashPlayerDebugger.exe" />
+        </LauncherParameters>
+      </option>
+      <option name="mobileRunTarget" value="Emulator" />
+      <option name="moduleName" value="" />
+      <option name="overriddenMainClass" value="" />
+      <option name="overriddenOutputFileName" value="" />
+      <option name="overrideMainClass" value="false" />
+      <option name="runTrusted" value="true" />
+      <option name="screenDpi" value="0" />
+      <option name="screenHeight" value="0" />
+      <option name="screenWidth" value="0" />
+      <option name="url" value="http://" />
+      <option name="usbDebugPort" value="7936" />
+      <method />
+    </configuration>
+    <configuration default="true" type="FlexUnitRunConfigurationType" factoryName="FlexUnit" appDescriptorForEmulator="Android" class_name="" emulatorAdlOptions="" method_name="" package_name="" scope="Class">
+      <option name="BCName" value="" />
+      <option name="launcherParameters">
+        <LauncherParameters>
+          <option name="browser" value="a7bb68e0-33c0-4d6f-a81a-aac1fdb870c8" />
+          <option name="launcherType" value="OSDefault" />
+          <option name="newPlayerInstance" value="false" />
+          <option name="playerPath" value="FlashPlayerDebugger.exe" />
+        </LauncherParameters>
+      </option>
+      <option name="moduleName" value="" />
+      <option name="trusted" value="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="GrailsRunConfigurationType" factoryName="Grails">
+      <setting name="vmparams" value="" />
+      <setting name="cmdLine" value="run-app" />
+      <setting name="passParentEnv" value="true" />
+      <setting name="launchBrowser" value="true" />
+      <setting name="launchBrowserUrl" value="" />
+      <setting name="depsClasspath" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Java Scratch" factoryName="Java Scratch">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="SCRATCH_FILE_ID" value="0" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
+      <node-interpreter value="project" />
+      <working-dir value="" />
+      <envs />
+      <scope-kind value="ALL" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="maxflowCredit" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType" factoryName="Kotlin script">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="filePath" />
+      <option name="vmParameters" />
+      <option name="alternativeJrePath" />
+      <option name="programParameters" />
+      <option name="passParentEnvs" value="true" />
+      <option name="workingDirectory" />
+      <option name="isAlternativeJrePathEnabled" value="false" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="ScalaScriptConsoleRunConfiguration" factoryName="Scala Console">
+      <module name="" />
+      <setting name="vmparams4" value="-Djline.terminal=NONE" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="consoleArgs" value="-usejavacp" />
+      <method />
+    </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Specs2RunConfiguration" factoryName="Specs2">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="osgi.bnd.run" factoryName="Run Launcher">
+      <method />
+    </configuration>
+    <configuration default="true" type="osgi.bnd.run" factoryName="Test Launcher (JUnit)">
+      <method />
+    </configuration>
+    <configuration default="true" type="uTestRunConfiguration" factoryName="utest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <classRegexps />
+      <testRegexps />
+      <envs />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Scala Console.Scala Console" />
+    </list>
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4d706ed1-ef36-41d6-8610-4d06de49a350" name="Default" comment="" />
+      <created>1497613069718</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1497613069718</updated>
+      <workItem from="1498203557242" duration="307000" />
+      <workItem from="1498204030995" duration="2511000" />
+      <workItem from="1498206795225" duration="1019000" />
+      <workItem from="1498208264060" duration="70465000" />
+      <workItem from="1498699871028" duration="215290000" />
+      <workItem from="1499648062870" duration="42781000" />
+      <workItem from="1499954415310" duration="12053000" />
+      <workItem from="1500109288363" duration="2306000" />
+      <workItem from="1500169917939" duration="2216000" />
+      <workItem from="1500174926444" duration="51000" />
+      <workItem from="1500175304345" duration="961000" />
+      <workItem from="1500176283556" duration="23007000" />
+      <workItem from="1500275242568" duration="484000" />
+      <workItem from="1500275963204" duration="184000" />
+      <workItem from="1500276166146" duration="7103000" />
+      <workItem from="1500284291529" duration="2702000" />
+      <workItem from="1500343387669" duration="5372000" />
+      <workItem from="1500366237107" duration="2478000" />
+      <workItem from="1500424583993" duration="1573000" />
+      <workItem from="1500426505294" duration="183000" />
+      <workItem from="1500426971475" duration="11566000" />
+      <workItem from="1500448748308" duration="2578000" />
+      <workItem from="1500512996595" duration="8653000" />
+      <workItem from="1500522745986" duration="239000" />
+    </task>
+    <task id="LOCAL-00001" summary="最大流算法：&#10;节点串行抽子图，子图内节点串行执行两两对的并行最大流">
+      <created>1499779894414</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1499779894414</updated>
+    </task>
+    <task id="LOCAL-00002" summary="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect">
+      <created>1500451208500</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1500451208500</updated>
+    </task>
+    <task id="LOCAL-00003" summary="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect">
+      <created>1500522932649</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1500522932649</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="416082000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="2" width="1932" height="1045" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12513721" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27233586" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19758508" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1470911" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1920668" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15833333" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17653391" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" x="92" y="92" width="1736" height="856" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="最大流算法：&#10;节点串行抽子图，子图内节点串行执行两两对的并行最大流" />
+    <MESSAGE value="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect" />
+    <option name="LAST_COMMIT_MESSAGE" value="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="8" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/main/Main.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="15" column="30" lean-forward="true" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+          <folding>
+            <element signature="e#599#626#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="22" column="5" lean-forward="true" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
+          <folding>
+            <element signature="e#24#51#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/resources/db.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="6" column="12" lean-forward="true" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/java/Parameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/org/apache/spark/graphx/EdgeContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="1" column="15" lean-forward="false" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files (x86)/scala/lib/scala-library.jar!/scala/collection/generic/GenericTraversableTemplate.class" />
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/org/apache/spark/graphx/Edge.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="1" column="187" lean-forward="false" selection-start-line="1" selection-start-column="187" selection-end-line="1" selection-end-column="187" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/maxflowCreditTool.scala" />
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/sql/catalyst/src/main/scala/org/apache/spark/sql/Row.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="255" column="6" lean-forward="false" selection-start-line="255" selection-start-column="6" selection-end-line="255" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/sql/core/src/main/scala/org/apache/spark/sql/DataFrame.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="839">
+          <caret line="943" column="6" lean-forward="false" selection-start-line="943" selection-start-column="6" selection-end-line="943" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/NsrVertexAttr.scala" />
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/NsrEdgeAttr.scala" />
+    <entry file="file://$PROJECT_DIR$/src/lg/resources/db.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="1" column="10" lean-forward="true" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/VertexRDD.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-58">
+          <caret line="110" column="6" lean-forward="false" selection-start-line="110" selection-start-column="6" selection-end-line="110" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+          <folding>
+            <element signature="e#24#51#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/StronglyConnectedComponents.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="24" column="7" lean-forward="false" selection-start-line="24" selection-start-column="7" selection-end-line="24" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/ConnectedComponents.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="37" column="71" lean-forward="true" selection-start-line="37" selection-start-column="71" selection-end-line="37" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/java/Parameters.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="11" column="12" lean-forward="true" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/ShortestPaths.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="736">
+          <caret line="48" column="98" lean-forward="true" selection-start-line="48" selection-start-column="98" selection-end-line="48" selection-end-column="98" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/resources/InputCsv/vertices.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/resources/InputCsv/edges.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/Iterator.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="60" column="6" lean-forward="false" selection-start-line="60" selection-start-column="6" selection-end-line="60" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/LabelPropagation.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="46" column="15" lean-forward="true" selection-start-line="46" selection-start-column="15" selection-end-line="46" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/EdgeDirection.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="48" column="7" lean-forward="false" selection-start-line="48" selection-start-column="7" selection-end-line="48" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/IndexedSeqOptimized.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="19" column="15" lean-forward="false" selection-start-line="19" selection-start-column="15" selection-end-line="19" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/core/src/main/scala/org/apache/spark/rdd/RDD.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="662" column="61" lean-forward="false" selection-start-line="662" selection-start-column="61" selection-end-line="662" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/Pregel.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1622">
+          <caret line="55" column="7" lean-forward="false" selection-start-line="55" selection-start-column="7" selection-end-line="55" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/package.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="31" column="6" lean-forward="false" selection-start-line="31" selection-start-column="6" selection-end-line="31" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/generic/GenericCompanion.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/EdgeContext.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="38" column="6" lean-forward="false" selection-start-line="38" selection-start-column="6" selection-end-line="38" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="6" column="6" lean-forward="false" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/Graph.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="421" column="6" lean-forward="false" selection-start-line="421" selection-start-column="6" selection-end-line="421" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/GraphOps.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="353" column="6" lean-forward="false" selection-start-line="353" selection-start-column="6" selection-end-line="353" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/core/src/main/scala/org/apache/spark/Partition.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="22" column="6" lean-forward="false" selection-start-line="22" selection-start-column="6" selection-end-line="22" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/TraversableOnce.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="11" column="6" lean-forward="false" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/PageRank.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-670">
+          <caret line="61" column="7" lean-forward="false" selection-start-line="61" selection-start-column="7" selection-end-line="61" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="350">
+          <caret line="14" column="1" lean-forward="false" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/console.sql" />
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/mutable/Set.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/core/src/main/scala/org/apache/spark/rdd/PairRDDFunctions.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1288">
+          <caret line="161" column="6" lean-forward="false" selection-start-line="161" selection-start-column="6" selection-end-line="161" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbSrc:///d51a7f86/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/schema/TAX/view/WWD_GROUNDTRUTH.sql" />
+    <entry file="dbDummy://dbtable:/d51a7f86/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/TAX.XY_NSR_XYJB">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="3" column="31" lean-forward="false" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="5" column="37" lean-forward="false" selection-start-line="5" selection-start-column="25" selection-end-line="5" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Download/安装资源/spark-1.5.1/core/src/main/scala/org/apache/spark/SparkContext.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18050">
+          <caret line="722" column="6" lean-forward="false" selection-start-line="722" selection-start-column="6" selection-end-line="722" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4500">
+          <caret line="188" column="49" lean-forward="false" selection-start-line="188" selection-start-column="49" selection-end-line="188" selection-end-column="49" />
+          <folding>
+            <element signature="e#24#51#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2625">
+          <caret line="118" column="0" lean-forward="false" selection-start-line="118" selection-start-column="0" selection-end-line="118" selection-end-column="0" />
+          <folding>
+            <element signature="e#24#51#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="16" column="6" lean-forward="false" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
+          <folding>
+            <element signature="e#25#100#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/main/Main.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="24" column="41" lean-forward="true" selection-start-line="24" selection-start-column="41" selection-end-line="24" selection-end-column="41" />
+          <folding>
+            <element signature="e#599#626#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="23" column="30" lean-forward="false" selection-start-line="23" selection-start-column="30" selection-end-line="23" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <last-edited>maxflowCredit:jar</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.5" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>scala</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>maxflowCredit</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>spark-assembly-1.5.1-hadoop2.6.0</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
