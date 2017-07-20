@@ -25,7 +25,7 @@ object Main {
     val hiveContext = new HiveContext(sc)
 
     //如果不存在最大流信用网络，则从初始化tpin开始
-    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/vertices")) {
+   if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/vertices")) {
       //  val tpin = InputOutputTools.getFromOracle(hiveContext).persist()
       val tpin = InputOutputTools.getFromOracle2(hiveContext).persist()
       println("\nafter construct:  \n节点数：" + tpin.vertices.count)
@@ -50,17 +50,18 @@ object Main {
     val fixEdgeWeightGraph = MaxflowCreditTools.fixEdgeWeight(tpin).persist()
     println("\nfixEdgeWeightGraph:  \n节点数：" + fixEdgeWeightGraph.vertices.count)
     println("边数：" + fixEdgeWeightGraph.edges.count)
-    InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
-  //  val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
+  InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
+   //   val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
 
     //各节点向外扩展3步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
-    val selectGraph = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D && vattr._1 <= 0.4)
+    val selectGraph = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0.4 && vattr._1 < 0.8)
 
     println("\nselectGraph:  \n节点数：" + selectGraph.vertices.count)
     println("边数：" + selectGraph.edges.count)
+    println("\n节点中有问题的：" + selectGraph.vertices.filter(_._2._2==true).count)
     val extendPair = MaxflowCreditTools.extendSubgraph(selectGraph.mapVertices((vid, vattr) => (vattr._1)))
     println("extendPair运行Done!")
-    InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph")
+    InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph4_8")
 
   //  val extendPair = InputOutputTools.get3RDDAsObjectFile[VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]]](sc, "/lg/maxflowCredit/extendSubgraph").persist()
 
@@ -70,8 +71,8 @@ object Main {
     //验证
     val experimentResult = ExperimentTools.verify(sc, maxflowCredit, selectGraph)
     println("验证Done!")
-    InputOutputTools.saveRDDAsFile(sc, sc.parallelize(maxflowCredit), "/lg/maxflowCredit/maxflowScore_oD", experimentResult._1, "/lg/maxflowCredit/maxflowScore_tD")
-    sc.parallelize(experimentResult._2).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSortD")
+    InputOutputTools.saveRDDAsFile(sc, sc.parallelize(maxflowCredit), "/lg/maxflowCredit/maxflowScore_o4_8", experimentResult._1, "/lg/maxflowCredit/maxflowScore_t4_8")
+    sc.parallelize(experimentResult._2).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort4_8")
 
 
   }
