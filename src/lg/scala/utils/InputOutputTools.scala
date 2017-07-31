@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.net.URI
 
 import lg.java.Parameters
-import lg.scala.entity.{InitEdgeAttr, InitVertexAttr}
+import lg.scala.entity.{InitEdgeAttr, InitVertexAttr, MaxflowGraph, MaxflowVertexAttr}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId}
@@ -20,7 +20,7 @@ import scala.reflect.ClassTag
   * Created by lg on 2017/6/19.
   */
 object InputOutputTools {
-  def saveRDDAsFile(sc: SparkContext, objectRdd: RDD[(VertexId, Double)], objectPath: String, textRdd: RDD[(VertexId, Double,Boolean)], textPath: String) = {
+  def saveRDDAsFile(sc: SparkContext, objectRdd: RDD[(VertexId, Double)], objectPath: String, textRdd: RDD[(VertexId, Double, Boolean)], textPath: String) = {
     //检查hdfs中是否已经存在
     val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
     try {
@@ -236,16 +236,22 @@ object InputOutputTools {
     hdfs.exists(new Path(path))
   }
 
-  def getFromCsv(sc: SparkContext, vertexPath: String, edgePath: String) = {
+  def getFromCsv(sc: SparkContext, vertexPath: String, edgePath: String): MaxflowGraph = {
     val edgesTxt = sc.textFile(edgePath)
     val vertexTxt = sc.textFile(vertexPath)
     val vertices = vertexTxt.filter(!_.startsWith("id")).map(_.split(",")).map {
-      case node => (node(0).toLong, node(1).toDouble)
-    }
+      case node => val vtemp = MaxflowVertexAttr(node(0).toLong,node(1).toDouble)
+        vtemp
+    }.collect()
+    var G = new MaxflowGraph()
     val edges = edgesTxt.filter(!_.startsWith("src")).map(_.split(",")).map {
-      case e => Edge(e(0).toLong, e(1).toLong, e(2).toDouble)
+      case e => {
+        val a=vertices.filter(_.id==e(0).toLong).toList.head
+        val b=vertices.filter(_.id==e(1).toLong).toList.head
+        G.addEdge(a, b, e(2).toDouble)
+      }
     }
-    Graph(vertices, edges)
+    return G
   }
 
 }

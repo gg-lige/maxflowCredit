@@ -21,6 +21,6 @@ object ExperimentTools {
       result.put(i, P.%(3))
       i += 100
     }
-    (B.repartition(1), result.toSeq.sortBy(_._1)(Ordering[VertexId]))
+    (B.repartition(1), sc.parallelize(result.toSeq))
   }
 }
