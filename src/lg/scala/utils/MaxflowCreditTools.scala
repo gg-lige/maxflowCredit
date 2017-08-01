@@ -9,6 +9,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId}
 import org.apache.spark.rdd.RDD
 
+import scala.collection.mutable
 import scala.collection.mutable.{HashMap, LinkedHashMap, Set}
 
 /**
@@ -31,6 +32,7 @@ object MaxflowCreditTools {
 
   //===========================================================================================================================================
   //第二种最大流方法：采用自己构造的图结构MaxflowGraph、串行算法【暂时采用此算法】
+  //解析路径
   def parse(path: LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr], key: MaxflowVertexAttr): List[MaxflowVertexAttr] = {
     key match {
       case null => Nil
@@ -51,12 +53,12 @@ object MaxflowCreditTools {
     var queue: Set[MaxflowVertexAttr] = Set()
     //返回的路径
     var paths = LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]()
-    //初始节点距离为0，容量为fs.已被访问。
-    residual.getGraph().keySet.filter(_ == src).head.setCapacity(fs)
-    residual.getGraph().keySet.filter(_ == src).head.setDistance(0)
+    //初始节点更新距离为0，容量为fs.
+    residual.getGraph().keySet.find(_ == src).get.update(0, fs)
 
     var top = residual.getGraph().keySet.filter(_ == src).head
     queue = queue + top
+    //用于找最短距离最大容量的，每次循环删除已选择的节点
     var bigQueue = residual.getGraph().keySet.filter(_ != src)
     paths += (top -> null)
     while (bigQueue.nonEmpty) {
@@ -71,9 +73,10 @@ object MaxflowCreditTools {
             b.dst.update(a.distance, a.capacity)
         }
       }
-         queue.clear()
+      queue.clear()
       val adj = residual.getAdj(top)
       for (edge <- adj) {
+        //top的邻居结点，（仅以top为源节点的）
         if (edge.src.distance + 1 < edge.dst.distance && edge.weight > 0D && bigQueue.contains(edge.dst)) {
           val candi = bigQueue.find(_ == edge.dst).get
           candi.distance = edge.src.distance + 1
@@ -84,12 +87,25 @@ object MaxflowCreditTools {
       //最小距离，最大容量
       var minDistance = bigQueue.minBy(_.distance).distance
       top = bigQueue.filter(_.distance == minDistance).maxBy(_.capacity)
+      //加入路径中
       paths += (top -> paths.keySet.last)
       if (top == dst) {
-        return if (top.distance == Int.MaxValue - 1) List[MaxflowVertexAttr]()
-        else parse(paths, paths.keySet.last).reverse
+        if (top.distance == Int.MaxValue - 1)
+          return List[MaxflowVertexAttr]()
+        else {
+          return parse(paths, paths.keySet.last).reverse
+          /*     var pathReverse = parse(paths, paths.keySet.last).reverse
+               val shortestDis=pathReverse.last.distance
+               var returnPath =List[MaxflowVertexAttr]()
+               for(i<-0 to shortestDis){
+                 val p=pathReverse.filter(_.distance==i).head
+                 returnPath=returnPath:+ p
+               }
+               return returnPath*/
+        }
       }
-      bigQueue = bigQueue.diff(Set(top))
+      bigQueue = bigQueue.diff(queue)
+      //bigQueue = bigQueue.diff(Set(top))
     }
     null
   }
@@ -149,9 +165,9 @@ object MaxflowCreditTools {
   }
 
   /*
-    val vGraph0 =extendPair.filter(_._1==6L).map(_._2).collect.head
-    var src = vGraph0.getGraph().keySet.filter(_.id == 1L).head
-    var dst = vGraph0.getGraph().keySet.filter(_.id == 6L).head
+    val vGraph =extendPair.filter(_._1==6L).map(_._2).collect.head
+    var src = vGraph.getGraph().keySet.filter(_.id == 1L).head
+    var dst = vGraph.getGraph().keySet.filter(_.id == 6L).head
 
     */
 
@@ -267,7 +283,7 @@ object MaxflowCreditTools {
         4
       }
       else if (n1.distance == n2.distance) {
-        if (n1.capacity > n2.capacity) {
+        if (n1.capacity < n2.capacity) {
           3
         }
         else {
@@ -275,12 +291,37 @@ object MaxflowCreditTools {
         }
       }
       else {
-        1
+        -1
       }
     }
   }
 
-  def bfs2(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double) = {
+  /*
+    val a=MaxflowVertexAttr(1,12,5,7)
+    val b=MaxflowVertexAttr(2,12,1,5)
+    val c=MaxflowVertexAttr(3,12,1,9)
+    val d=MaxflowVertexAttr(4,12,4,8)
+    queue.add(a)
+    queue.add(b)
+    queue.add(c)
+    queue.add(d)
+    */
+
+  def bfs2(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double): List[MaxflowVertexAttr] = {
+    //    val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
+    /*  queue.sortBy(_.distance)
+      queue= a+:queue
+      queue= b+:queue
+      queue= c+:queue
+      queue= d+:queue*/
+    /*   for ((key, value) <- residual.getGraph) {
+         val currNode = key
+         if (currNode == src) {
+           currNode.distance = 0
+           currNode.capacity = fs
+           queue = currNode +: queue
+         }
+       }*/
     //  重新构图
     var residual = new MaxflowGraph
     vGraph.getAllEdge().foreach { case e =>
@@ -288,34 +329,45 @@ object MaxflowCreditTools {
       val d = new MaxflowVertexAttr(e.dst.id, e.dst.initScore)
       residual.addEdge(s, d, e.weight)
     }
-    val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
-    for ((key, value) <- residual.getGraph) {
-      val currNode = key
-      if (currNode == src) {
-        currNode.distance = 0
-        currNode.capacity = fs
-        queue.add(currNode)
-      }
-    }
-    val doneSet = new util.HashSet[MaxflowVertexAttr]()
-    while (!queue.isEmpty) {
+    //存储该节点是否有下一访问点
+    var queue = List[MaxflowVertexAttr]()
+    val currNode = residual.getGraph().keySet.find(_ == src).get
+    currNode.update(0, fs)
+    queue = currNode +: queue
+    //已经访问过的节点
+    var doneSet = mutable.LinkedHashSet[MaxflowVertexAttr]()
+    //返回的路径
+    var paths = LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]()
+    //  paths += (currNode -> null)
 
-      val a = queue.iterator()
-      while (a.hasNext) {
-        val atemp = a.next()
-        residual.getGraph().keySet.filter(x => (x == atemp)).head.update(atemp.distance, atemp.capacity)
+    while (!queue.isEmpty) {
+      //更新图属性
+      for (a <- queue) {
+        residual.getGraph().keySet.find(_ == a).get.update(a.distance, a.capacity)
         val edgetemp = residual.getAllEdge()
         for (b <- edgetemp) {
-          if (b.src == atemp)
-            b.src.update(atemp.distance, atemp.capacity)
-          if (b.dst == atemp)
-            b.dst.update(atemp.distance, atemp.capacity)
+          if (b.src == a)
+            b.src.update(a.distance, a.capacity)
+          if (b.dst == a)
+            b.dst.update(a.distance, a.capacity)
         }
       }
       //用于检索并移除此队列的头,此时queue已为空
+      val minDistance = queue.minBy(_.distance).distance
+      val src = queue.filter(_.distance == minDistance).maxBy(_.capacity)
+      queue = queue.filter(_ != src)
 
+      /*  if (doneSet.map(_.distance).contains(src.distance)) {
+          val addQueue = doneSet.filter(_.distance >= minDistance)
+          addQueue.foreach { case v =>
+            queue = v +: queue
+          }
+          doneSet = doneSet.filter(_.distance < minDistance)
+          doneSet.add(src)
+
+        } else
+  */
       doneSet.add(src)
-      queue.clear()
       for (edge <- residual.getAdj(src)) {
         val currentNode = edge.getAdjacentNode(src)
         if (!doneSet.contains(currentNode) && currentNode != null) {
@@ -323,13 +375,12 @@ object MaxflowCreditTools {
           if (newDistance < currentNode.distance && edge.weight > 0D) {
             currentNode.distance = newDistance
             currentNode.capacity = Math.min(Math.min(src.capacity * gain(src.distance), edge.weight), fs)
-            queue.add(currentNode)
+            queue = currentNode +: queue
           }
         }
       }
-
     }
-    doneSet
+    null
   }
 
 
