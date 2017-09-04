@@ -56,7 +56,7 @@ object MaxflowCreditTools {
     //初始节点更新距离为0，容量为fs.
     residual.getGraph().keySet.find(_ == src).get.update(0, fs)
 
-    var top = residual.getGraph().keySet.filter(_ == src).head
+    var top = src
     queue = queue + top
     //用于找最短距离最大容量的，每次循环删除已选择的节点
     var bigQueue = residual.getGraph().keySet.filter(_ != src)
@@ -280,16 +280,16 @@ object MaxflowCreditTools {
     override def compare(n1: lg.scala.entity.MaxflowVertexAttr, n2: lg.scala.entity.MaxflowVertexAttr): Int = {
       //最小距离，最大容量
       if (n1.distance > n2.distance) {
-        4
+        1
       }
-      else if (n1.distance == n2.distance) {
+  /*    else if (n1.distance == n2.distance) {
         if (n1.capacity < n2.capacity) {
           3
         }
         else {
           2
         }
-      }
+      }*/
       else {
         -1
       }
@@ -308,7 +308,7 @@ object MaxflowCreditTools {
     */
 
   def bfs2(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double): List[MaxflowVertexAttr] = {
-    //    val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
+       val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
     /*  queue.sortBy(_.distance)
       queue= a+:queue
       queue= b+:queue
@@ -330,10 +330,11 @@ object MaxflowCreditTools {
       residual.addEdge(s, d, e.weight)
     }
     //存储该节点是否有下一访问点
-    var queue = List[MaxflowVertexAttr]()
+ //   var queue = List[MaxflowVertexAttr]()
     val currNode = residual.getGraph().keySet.find(_ == src).get
     currNode.update(0, fs)
-    queue = currNode +: queue
+ //   queue = currNode +: queue
+    queue.add(currNode)
     //已经访问过的节点
     var doneSet = mutable.LinkedHashSet[MaxflowVertexAttr]()
     //返回的路径
@@ -342,7 +343,10 @@ object MaxflowCreditTools {
 
     while (!queue.isEmpty) {
       //更新图属性
-      for (a <- queue) {
+   //   for (a <- queue) {
+       val it= queue.iterator()
+      while (it.hasNext){
+        val a =it.next()
         residual.getGraph().keySet.find(_ == a).get.update(a.distance, a.capacity)
         val edgetemp = residual.getAllEdge()
         for (b <- edgetemp) {
@@ -352,11 +356,12 @@ object MaxflowCreditTools {
             b.dst.update(a.distance, a.capacity)
         }
       }
+    //  }
       //用于检索并移除此队列的头,此时queue已为空
-      val minDistance = queue.minBy(_.distance).distance
+    /*  val minDistance = queue.minBy(_.distance).distance
       val src = queue.filter(_.distance == minDistance).maxBy(_.capacity)
-      queue = queue.filter(_ != src)
-
+      queue = queue.filter(_ != src)*/
+      val src =queue.poll()
       /*  if (doneSet.map(_.distance).contains(src.distance)) {
           val addQueue = doneSet.filter(_.distance >= minDistance)
           addQueue.foreach { case v =>
@@ -375,7 +380,8 @@ object MaxflowCreditTools {
           if (newDistance < currentNode.distance && edge.weight > 0D) {
             currentNode.distance = newDistance
             currentNode.capacity = Math.min(Math.min(src.capacity * gain(src.distance), edge.weight), fs)
-            queue = currentNode +: queue
+         //   queue = currentNode +: queue
+            queue.add(currentNode)
           }
         }
       }
@@ -385,7 +391,7 @@ object MaxflowCreditTools {
 
 
   /**
-    * 节点上存储边集（即子图）
+    * 节点上存储子图
     */
   def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 6): RDD[(VertexId, MaxflowGraph)] = {
     val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
