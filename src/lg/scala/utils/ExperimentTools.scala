@@ -16,7 +16,7 @@ object ExperimentTools {
     //前2000名波动性
     var i = 100
     var result = HashMap[VertexId, Double]()
-    while (i <= 7000) {
+    while (i <= 10000) {
       val P = sc.parallelize(B.top(i)).filter(_._3 == true).count() / i.toDouble
       result.put(i, P.%(3))
       i += 100

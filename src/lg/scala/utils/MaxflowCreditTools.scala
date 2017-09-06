@@ -1,7 +1,7 @@
 package lg.scala.utils
 
 
-import java.util
+
 import java.util.{Comparator, PriorityQueue}
 
 import lg.scala.entity._
@@ -16,7 +16,72 @@ import scala.collection.mutable.{HashMap, LinkedHashMap, Set}
   * Created by lg on 2017/6/27.
   */
 object MaxflowCreditTools {
+  /**
+    * 修正图上的边权值（信息融合等原理）
+    */
+  def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[(Double, Boolean), Double] = {
+    val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion + e.attr.w_invest + e.attr.w_stockholder + e.attr.w_trade) / 4).edges
+    val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
+    val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
+    val vertexDegree = totalGraph.degrees.persist()
+    Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
+  }
 
+  /**
+    * 节点上存储子图
+    */
+  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 6): RDD[(VertexId, MaxflowGraph)] = {
+    val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
+      //发送的消息为：节点编号，(源终节点编号),边权重，节点属性，向源|终点发
+      triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
+      triple.sendToDst(Set((triple.srcId, triple.dstId, triple.attr, triple.srcAttr, true)))
+    }, _ ++ _)
+    val neighborVertex = neighbor.map { case (vid, vattr) =>
+      if (vattr.size > selectTopN)
+        (vid, vattr.toSeq.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
+      else
+        (vid, vattr)
+    }.cache()
+
+    //一层邻居 （社团，不包含节点自身）
+    val neighborPair1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
+    //二层邻居
+    val neighborPair2 = neighborPair1.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    //三层邻居
+    val neighborPair3 = neighborPair2.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
+
+    val returnNeighbor = neighborPair.aggregateByKey(Set[(VertexId, VertexId, Double, Double, Boolean)]())(_ += _, _ ++ _)
+      .map { case (vid, vattr) =>
+        var e = HashMap[(VertexId, VertexId), Double]()
+        var v = HashMap[VertexId, Double]()
+
+        vattr.foreach { case (vSubId, vRelate, eWeight, vWeight, srcOrdst) =>
+          v.put(vSubId, vWeight)
+          if (srcOrdst == true)
+            e.put((vSubId, vRelate), eWeight)
+          else
+            e.put((vRelate, vSubId), eWeight)
+        }
+        if (!v.contains(vid)) {
+          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常
+          //      v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
+          v.put(vid, 0D)
+        }
+        /* val subVertex: List[MaxflowVertexAttr] = v.map(v => MaxflowVertexAttr(v._1, v._2)).toList
+         val subEdge: List[MaxflowEdgeAttr] = e.map(e => MaxflowEdgeAttr(e._1._1, e._1._2, e._2)).toList
+         (vid, subVertex, subEdge)*/
+
+        var G = new MaxflowGraph()
+        e.map { case ((src, dst), eweight) =>
+          var a = v.filter(_._1 == src).toList.head
+          var b = v.filter(_._1 == dst).toList.head
+          G.addEdge(MaxflowVertexAttr(a._1, a._2), MaxflowVertexAttr(b._1, b._2), eweight)
+        }
+        (vid, G)
+      }
+    returnNeighbor
+  }
 
   /**
     * 每个节点的泄露函数
@@ -30,8 +95,132 @@ object MaxflowCreditTools {
     toReturn
   }
 
+  /**
+    * 计算最大流分数
+    */
+  def run(extendPair: RDD[(VertexId, MaxflowGraph)]) = {
+    var count = 0
+    extendPair.map { case (vid, vGraph) =>
+      var allflow = 0D
+      var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
+      for (src <- vGraph.getGraph().keySet.-(dst)) {
+        //调用最大流算法计算pair节点n步之内所有节点对其传递值
+        val flowtemp = maxflowNotGraphX(vGraph, src, dst)
+        allflow += flowtemp._3
+      }
+      count = count + 1
+      //    if (count % 100 == 0)
+      println(count)
+      (vid, allflow)
+    }
+  }
+
+  /*
+  测试用例
+   val vGraph =extendPair.filter(_._1==6L).map(_._2).collect.head
+   var src = vGraph.getGraph().keySet.filter(_.id == 1L).head
+   var dst = vGraph.getGraph().keySet.filter(_.id == 6L).head
+   */
+
+  def maxflowNotGraphX(vGraph0: MaxflowGraph, src: MaxflowVertexAttr, dst: MaxflowVertexAttr): (MaxflowVertexAttr, MaxflowVertexAttr, Double) = {
+    var fs = src.initScore
+    var vGraph = vGraph0
+    var maxflows = 0D
+    var i = 1
+    val empty = List[MaxflowVertexAttr]()
+    while (fs > 0) {
+      println(fs)
+      val shortest = bfs4(src, dst, vGraph, fs)
+      if (shortest != empty) {
+        var path = Set[MaxflowEdgeAttr]()
+        for (i <- 0 until shortest.size - 1) {
+          path = path.+(MaxflowEdgeAttr(shortest(i), shortest(i + 1), shortest(i + 1).capacity))
+        }
+        val edgeTemp = vGraph.getAllEdge()
+
+        for (a <- path) {
+          for (b <- edgeTemp) {
+            if (a == b) {
+              b.weight = b.weight - a.weight //修正正向弧
+              vGraph.addEdge(a.dst, a.src, a.weight) //添加反向弧
+            }
+          }
+        }
+        fs -= shortest(1).capacity
+      } else
+        return (src, dst, maxflows)
+      maxflows += shortest.last.capacity
+    }
+    return (src, dst, maxflows)
+  }
+
   //===========================================================================================================================================
-  //第二种最大流方法：采用自己构造的图结构MaxflowGraph、串行算法【暂时采用此算法】
+  //第四种最大流方法【最终正确版本】
+  def bfs4(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double): List[MaxflowVertexAttr] = {
+    //  重新构图
+    var residual = new MaxflowGraph
+    vGraph.getAllEdge().foreach { case e =>
+      val s = new MaxflowVertexAttr(e.src.id, e.src.initScore)
+      val d = new MaxflowVertexAttr(e.dst.id, e.dst.initScore)
+      residual.addEdge(s, d, e.weight)
+    }
+
+    var queue = List[MaxflowVertexAttr]()
+    //初始节点更新距离为0，容量为fs.
+    residual.getGraph().keySet.find(_ == src).get.update(0, fs)
+    queue = residual.getGraph().keySet.find(_ == src).get +: queue
+
+    while (!queue.isEmpty) {
+      //更新图
+      for (a <- queue) {
+        residual.getGraph().keySet.filter(x => (x == a)).head.update(a.distance, a.capacity)
+        val edgetemp = residual.getAllEdge()
+        for (b <- edgetemp) {
+          if (b.src == a)
+            b.src.update(a.distance, a.capacity)
+          if (b.dst == a)
+            b.dst.update(a.distance, a.capacity)
+        }
+      }
+
+      queue = queue.sortWith { (p1: MaxflowVertexAttr, p2: MaxflowVertexAttr) =>
+        p1.distance == p2.distance match {
+          case false => -p1.distance.compareTo(p2.distance) > 0
+          case _ => p1.capacity - p2.capacity > 0
+        }
+      }
+
+      var top = queue.head
+      queue = queue.drop(1)
+
+      for (edge <- residual.getAdj(top)) {
+        //top的邻居结点，（仅以top为源节点的）
+        if (edge.src.distance + 1 < edge.dst.distance && edge.weight > 0D) { //??标记更新
+          val candi = residual.getGraph().keySet.find(_ == edge.dst).get
+          candi.distance = edge.src.distance + 1
+          candi.capacity = Math.min(Math.min(edge.src.capacity * gain(edge.src.distance), edge.weight), fs)
+          candi.edgeTo = top.id
+          queue = candi +: queue
+        }
+      }
+    }
+
+    // 检查是否有路径
+    if (residual.getGraph().keySet.find(_ == dst).get.capacity != (Double.MaxValue - 1)) {
+      var links = new LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]
+      links +=residual.getGraph().keySet.find(_ == dst).get->null
+      while (links.keySet.last.id != src.id) {
+        links += residual.getGraph().keySet.find(_.id == residual.getGraph().keySet.find(_ == links.keySet.last).get.edgeTo).get -> links.keySet.last
+      }
+     parse(links,residual.getGraph().keySet.find(_.id == src.id).get)
+    }
+    else
+      return List()
+
+  }
+
+  //===========================================================================================================================================
+  //第二种最大流方法：采用自己构造的图结构MaxflowGraph、串行算法
   //解析路径
   def parse(path: LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr], key: MaxflowVertexAttr): List[MaxflowVertexAttr] = {
     key match {
@@ -110,69 +299,124 @@ object MaxflowCreditTools {
     null
   }
 
-  //sc.parallelize(vGraph.getGraph().toSeq).repartition(1).saveAsTextFile("/lg/maxflowCredit/2")
-  //========================================================================
-  def maxflowNotGraphX(vGraph0: MaxflowGraph, src: MaxflowVertexAttr, dst: MaxflowVertexAttr): (MaxflowVertexAttr, MaxflowVertexAttr, Double) = {
-    var fs = src.initScore
-    var vGraph = vGraph0
-    var maxflows = 0D
-    var i = 1
-    val empty = List[MaxflowVertexAttr]()
-    while (fs > 0) {
-      println(fs)
-      val shortest = bfs(src, dst, vGraph, fs)
-      if (shortest != empty) {
-        var path = Set[MaxflowEdgeAttr]()
-        for (i <- 0 until shortest.size - 1) {
-          path = path.+(MaxflowEdgeAttr(shortest(i), shortest(i + 1), shortest(i + 1).capacity))
-        }
-        val edgeTemp = vGraph.getAllEdge()
-
-        for (a <- path) {
-          for (b <- edgeTemp) {
-            if (a == b) {
-              b.weight = b.weight - a.weight //修正正向弧
-              vGraph.addEdge(a.dst, a.src, a.weight) //添加反向弧
-            }
-          }
-        }
-        fs -= shortest(1).capacity
-      } else
-        return (src, dst, maxflows)
-      maxflows += shortest.last.capacity
-    }
-    return (src, dst, maxflows)
-  }
-
-  /**
-    * 计算最大流分数
-    */
-  def run(extendPair: RDD[(VertexId, MaxflowGraph)]) = {
-    var count = 0
-    extendPair.map { case (vid, vGraph) =>
-      var allflow = 0D
-      var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
-      for (src <- vGraph.getGraph().keySet.-(dst)) {
-        //调用最大流算法计算pair节点n步之内所有节点对其传递值
-        val flowtemp = maxflowNotGraphX(vGraph, src, dst)
-        allflow += flowtemp._3
+  //==============================================================================
+  //第三种最大流方法：采用自己构造的图结构MaxflowGraph、串行算法，采用 优先队列存储
+  class NodeCompator extends Comparator[lg.scala.entity.MaxflowVertexAttr] {
+    override def compare(n1: lg.scala.entity.MaxflowVertexAttr, n2: lg.scala.entity.MaxflowVertexAttr): Int = {
+      //最小距离，最大容量
+      if (n1.distance > n2.distance) {
+        1
       }
-      count = count + 1
-      //    if (count % 100 == 0)
-      println(count)
-      (vid, allflow)
+      /*    else if (n1.distance == n2.distance) {
+            if (n1.capacity < n2.capacity) {
+              3
+            }
+            else {
+              2
+            }
+          }*/
+      else {
+        -1
+      }
     }
   }
 
   /*
-    val vGraph =extendPair.filter(_._1==6L).map(_._2).collect.head
-    var src = vGraph.getGraph().keySet.filter(_.id == 1L).head
-    var dst = vGraph.getGraph().keySet.filter(_.id == 6L).head
-
+    val a=MaxflowVertexAttr(1,12,5,7)
+    val b=MaxflowVertexAttr(2,12,1,5)
+    val c=MaxflowVertexAttr(3,12,1,9)
+    val d=MaxflowVertexAttr(4,12,4,8)
+    queue.add(a)
+    queue.add(b)
+    queue.add(c)
+    queue.add(d)
     */
 
+  def bfs2(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double): List[MaxflowVertexAttr] = {
+    val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
+    /*  queue.sortBy(_.distance)
+      queue= a+:queue
+      queue= b+:queue
+      queue= c+:queue
+      queue= d+:queue*/
+    /*   for ((key, value) <- residual.getGraph) {
+         val currNode = key
+         if (currNode == src) {
+           currNode.distance = 0
+           currNode.capacity = fs
+           queue = currNode +: queue
+         }
+       }*/
+    //  重新构图
+    var residual = new MaxflowGraph
+    vGraph.getAllEdge().foreach { case e =>
+      val s = new MaxflowVertexAttr(e.src.id, e.src.initScore)
+      val d = new MaxflowVertexAttr(e.dst.id, e.dst.initScore)
+      residual.addEdge(s, d, e.weight)
+    }
+    //存储该节点是否有下一访问点
+    //   var queue = List[MaxflowVertexAttr]()
+    val currNode = residual.getGraph().keySet.find(_ == src).get
+    currNode.update(0, fs)
+    //   queue = currNode +: queue
+    queue.add(currNode)
+    //已经访问过的节点
+    var doneSet = mutable.LinkedHashSet[MaxflowVertexAttr]()
+    //返回的路径
+    var paths = LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]()
+    //  paths += (currNode -> null)
+
+    while (!queue.isEmpty) {
+      //更新图属性
+      //   for (a <- queue) {
+      val it = queue.iterator()
+      while (it.hasNext) {
+        val a = it.next()
+        residual.getGraph().keySet.find(_ == a).get.update(a.distance, a.capacity)
+        val edgetemp = residual.getAllEdge()
+        for (b <- edgetemp) {
+          if (b.src == a)
+            b.src.update(a.distance, a.capacity)
+          if (b.dst == a)
+            b.dst.update(a.distance, a.capacity)
+        }
+      }
+      //  }
+      //用于检索并移除此队列的头,此时queue已为空
+      /*  val minDistance = queue.minBy(_.distance).distance
+        val src = queue.filter(_.distance == minDistance).maxBy(_.capacity)
+        queue = queue.filter(_ != src)*/
+      val src = queue.poll()
+      /*  if (doneSet.map(_.distance).contains(src.distance)) {
+          val addQueue = doneSet.filter(_.distance >= minDistance)
+          addQueue.foreach { case v =>
+            queue = v +: queue
+          }
+          doneSet = doneSet.filter(_.distance < minDistance)
+          doneSet.add(src)
+
+        } else
+  */
+      doneSet.add(src)
+      for (edge <- residual.getAdj(src)) {
+        val currentNode = edge.getAdjacentNode(src)
+        if (!doneSet.contains(currentNode) && currentNode != null) {
+          val newDistance = src.distance + 1
+          if (newDistance < currentNode.distance && edge.weight > 0D) {
+            currentNode.distance = newDistance
+            currentNode.capacity = Math.min(Math.min(src.capacity * gain(src.distance), edge.weight), fs)
+            //   queue = currentNode +: queue
+            queue.add(currentNode)
+          }
+        }
+      }
+      doneSet
+    }
+    null
+  }
+
   //===========================================================================================
-  //第一种最大流方法：采用GraphX,并行求解最短路径
+  //第一种最大流方法：采用GraphX,并行求解最短路径[结果正确，但在大型数据集上×]
   /**
     * 最短增广路径
     */
@@ -274,188 +518,6 @@ object MaxflowCreditTools {
   }
 
 
-  //==============================================================================
-  //第三种最大流方法：采用自己构造的图结构MaxflowGraph、串行算法，采用 优先队列存储
-  class NodeCompator extends Comparator[lg.scala.entity.MaxflowVertexAttr] {
-    override def compare(n1: lg.scala.entity.MaxflowVertexAttr, n2: lg.scala.entity.MaxflowVertexAttr): Int = {
-      //最小距离，最大容量
-      if (n1.distance > n2.distance) {
-        1
-      }
-  /*    else if (n1.distance == n2.distance) {
-        if (n1.capacity < n2.capacity) {
-          3
-        }
-        else {
-          2
-        }
-      }*/
-      else {
-        -1
-      }
-    }
-  }
-
-  /*
-    val a=MaxflowVertexAttr(1,12,5,7)
-    val b=MaxflowVertexAttr(2,12,1,5)
-    val c=MaxflowVertexAttr(3,12,1,9)
-    val d=MaxflowVertexAttr(4,12,4,8)
-    queue.add(a)
-    queue.add(b)
-    queue.add(c)
-    queue.add(d)
-    */
-
-  def bfs2(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double): List[MaxflowVertexAttr] = {
-       val queue = new PriorityQueue[MaxflowVertexAttr](10, new NodeCompator())
-    /*  queue.sortBy(_.distance)
-      queue= a+:queue
-      queue= b+:queue
-      queue= c+:queue
-      queue= d+:queue*/
-    /*   for ((key, value) <- residual.getGraph) {
-         val currNode = key
-         if (currNode == src) {
-           currNode.distance = 0
-           currNode.capacity = fs
-           queue = currNode +: queue
-         }
-       }*/
-    //  重新构图
-    var residual = new MaxflowGraph
-    vGraph.getAllEdge().foreach { case e =>
-      val s = new MaxflowVertexAttr(e.src.id, e.src.initScore)
-      val d = new MaxflowVertexAttr(e.dst.id, e.dst.initScore)
-      residual.addEdge(s, d, e.weight)
-    }
-    //存储该节点是否有下一访问点
- //   var queue = List[MaxflowVertexAttr]()
-    val currNode = residual.getGraph().keySet.find(_ == src).get
-    currNode.update(0, fs)
- //   queue = currNode +: queue
-    queue.add(currNode)
-    //已经访问过的节点
-    var doneSet = mutable.LinkedHashSet[MaxflowVertexAttr]()
-    //返回的路径
-    var paths = LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]()
-    //  paths += (currNode -> null)
-
-    while (!queue.isEmpty) {
-      //更新图属性
-   //   for (a <- queue) {
-       val it= queue.iterator()
-      while (it.hasNext){
-        val a =it.next()
-        residual.getGraph().keySet.find(_ == a).get.update(a.distance, a.capacity)
-        val edgetemp = residual.getAllEdge()
-        for (b <- edgetemp) {
-          if (b.src == a)
-            b.src.update(a.distance, a.capacity)
-          if (b.dst == a)
-            b.dst.update(a.distance, a.capacity)
-        }
-      }
-    //  }
-      //用于检索并移除此队列的头,此时queue已为空
-    /*  val minDistance = queue.minBy(_.distance).distance
-      val src = queue.filter(_.distance == minDistance).maxBy(_.capacity)
-      queue = queue.filter(_ != src)*/
-      val src =queue.poll()
-      /*  if (doneSet.map(_.distance).contains(src.distance)) {
-          val addQueue = doneSet.filter(_.distance >= minDistance)
-          addQueue.foreach { case v =>
-            queue = v +: queue
-          }
-          doneSet = doneSet.filter(_.distance < minDistance)
-          doneSet.add(src)
-
-        } else
-  */
-      doneSet.add(src)
-      for (edge <- residual.getAdj(src)) {
-        val currentNode = edge.getAdjacentNode(src)
-        if (!doneSet.contains(currentNode) && currentNode != null) {
-          val newDistance = src.distance + 1
-          if (newDistance < currentNode.distance && edge.weight > 0D) {
-            currentNode.distance = newDistance
-            currentNode.capacity = Math.min(Math.min(src.capacity * gain(src.distance), edge.weight), fs)
-         //   queue = currentNode +: queue
-            queue.add(currentNode)
-          }
-        }
-      }
-    }
-    null
-  }
-
-
-  /**
-    * 节点上存储子图
-    */
-  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 6): RDD[(VertexId, MaxflowGraph)] = {
-    val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
-      //发送的消息为：节点编号，(源终节点编号),边权重，节点属性，向源|终点发
-      triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
-      triple.sendToDst(Set((triple.srcId, triple.dstId, triple.attr, triple.srcAttr, true)))
-    }, _ ++ _)
-    val neighborVertex = neighbor.map { case (vid, vattr) =>
-      if (vattr.size > selectTopN)
-        (vid, vattr.toSeq.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
-      else
-        (vid, vattr)
-    }.cache()
-
-    //一层邻居 （社团，不包含节点自身）
-    val neighborPair1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
-    //二层邻居
-    val neighborPair2 = neighborPair1.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
-    //三层邻居
-    val neighborPair3 = neighborPair2.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
-    val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
-
-    val returnNeighbor = neighborPair.aggregateByKey(Set[(VertexId, VertexId, Double, Double, Boolean)]())(_ += _, _ ++ _)
-      .map { case (vid, vattr) =>
-        var e = HashMap[(VertexId, VertexId), Double]()
-        var v = HashMap[VertexId, Double]()
-
-        vattr.foreach { case (vSubId, vRelate, eWeight, vWeight, srcOrdst) =>
-          v.put(vSubId, vWeight)
-          if (srcOrdst == true)
-            e.put((vSubId, vRelate), eWeight)
-          else
-            e.put((vRelate, vSubId), eWeight)
-        }
-        if (!v.contains(vid)) {
-          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常
-          //      v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
-          v.put(vid, 0D)
-        }
-        /* val subVertex: List[MaxflowVertexAttr] = v.map(v => MaxflowVertexAttr(v._1, v._2)).toList
-         val subEdge: List[MaxflowEdgeAttr] = e.map(e => MaxflowEdgeAttr(e._1._1, e._1._2, e._2)).toList
-         (vid, subVertex, subEdge)*/
-
-        var G = new MaxflowGraph()
-        e.map { case ((src, dst), eweight) =>
-          var a = v.filter(_._1 == src).toList.head
-          var b = v.filter(_._1 == dst).toList.head
-          G.addEdge(MaxflowVertexAttr(a._1, a._2), MaxflowVertexAttr(b._1, b._2), eweight)
-        }
-        (vid, G)
-      }
-    returnNeighbor
-  }
-
-  /**
-    * 修正图上的边权值（信息融合等原理）
-    */
-  def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[(Double, Boolean), Double] = {
-    val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion + e.attr.w_invest + e.attr.w_stockholder + e.attr.w_trade) / 4).edges
-    val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
-    val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
-    val vertexDegree = totalGraph.degrees.persist()
-    Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
-  }
 }
 
 
@@ -577,9 +639,6 @@ def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], maxIteration: Int)
     Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
   }
 }
-
-
-
     /*
 
      run方法

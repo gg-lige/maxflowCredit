@@ -5,7 +5,7 @@ package lg.scala.main
 //  spark-shell --master spark://cloud-03:7077 --master spark://cloud-03:7077 --executor-memory 32G --total-executor-cores 20 --driver-memory 16G  --jars /opt/hive/lib/ojdbc8.jar,/opt/hive/lib/mysql-connector-java-5.1.35-bin.jar,/opt/lg/maxflowCredit.jar
 //16 spark-shell --master spark://cloud-03:7077 --master spark://cloud-03:7077 --executor-memory 4G --total-executor-cores 2 --driver-memory 2G  --jars /opt/hive/lib/ojdbc8.jar,/opt/hive/lib/mysql-connector-java-5.1.35-bin.jar,/opt/maxflowCredit.jar
 //  spark-shell --master spark://cloud-03:7077 --master spark://cloud-03:7077 --executor-memory 64G --total-executor-cores 8 --executor-cores 8 --driver-memory 8G --jars /opt/hive/lib/ojdbc8.jar,/opt/hive/lib/mysql-connector-java-5.1.35-bin.jar,/opt/maxflowCredit.jar
-
+//用的jar2
 
 
 import java.beans.Transient
@@ -74,13 +74,13 @@ object Main {
   //val extendPair =sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph").repartition(128)
     //运行最大流算法
     val maxflowCredit = MaxflowCreditTools.run(extendPair)
-    maxflowCredit.saveAsTextFile("/lg/maxflowCredit/maxflowScore")
+    maxflowCredit.saveAsTextFile("/lg/maxflowCredit/maxflowScore2")
     println("最大流运行Done!")
     //验证
     val experimentResult = ExperimentTools.verify(sc, maxflowCredit.collect, selectGraph)
  //   println("验证Done!")
-    InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/maxflowScore_o", experimentResult._1, "/lg/maxflowCredit/maxflowScore_t")
-    experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort")
+    InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/maxflowScore2_o", experimentResult._1, "/lg/maxflowCredit/maxflowScore2_t")
+    experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort2")
 
 
   }
