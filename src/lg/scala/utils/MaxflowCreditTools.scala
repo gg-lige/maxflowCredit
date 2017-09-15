@@ -1,12 +1,11 @@
 package lg.scala.utils
 
 
-
 import java.util.{Comparator, PriorityQueue}
 
 import lg.scala.entity._
 import org.apache.spark.SparkContext
-import org.apache.spark.graphx.{Edge, Graph, VertexId}
+import org.apache.spark.graphx.{Edge, EdgeContext, Graph, VertexId}
 import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable
@@ -28,9 +27,9 @@ object MaxflowCreditTools {
   }
 
   /**
-    * 节点上存储子图
+    * 节点上存储子图【选用这个】
     */
-  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 6): RDD[(VertexId, MaxflowGraph)] = {
+  def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int = 7): RDD[(VertexId, MaxflowGraph)] = {
     val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
       //发送的消息为：节点编号，(源终节点编号),边权重，节点属性，向源|终点发
       triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
@@ -49,6 +48,12 @@ object MaxflowCreditTools {
     val neighborPair2 = neighborPair1.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     //三层邻居
     val neighborPair3 = neighborPair2.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    //四层邻居
+ //   val neighborPair4 = neighborPair3.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    //五层邻居
+ //   val neighborPair5 = neighborPair4.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
+    //六层邻居
+  //  val neighborPair6 = neighborPair5.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
 
     val returnNeighbor = neighborPair.aggregateByKey(Set[(VertexId, VertexId, Double, Double, Boolean)]())(_ += _, _ ++ _)
@@ -64,8 +69,8 @@ object MaxflowCreditTools {
             e.put((vRelate, vSubId), eWeight)
         }
         if (!v.contains(vid)) {
-          //RDD里面不能套RDD，所以collect不到信息，会报空指针异常
-          //      v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
+          //  RDD里面不能套RDD，所以collect不到信息，会报空指针异常
+          //  v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
           v.put(vid, 0D)
         }
         /* val subVertex: List[MaxflowVertexAttr] = v.map(v => MaxflowVertexAttr(v._1, v._2)).toList
@@ -82,6 +87,68 @@ object MaxflowCreditTools {
       }
     returnNeighbor
   }
+
+  /**
+    * 数据量过大，无法跑动选择Top all的
+    *
+    */
+  def extendSubgraph2(fixEdgeWeightGraph: Graph[Double, Double], maxIteration: Int= 3) = {
+    def sendMsg(edge: EdgeContext[mutable.Set[VertexId], Double, mutable.Set[VertexId]]) = {
+      edge.sendToDst(edge.srcAttr -- edge.dstAttr)
+      edge.sendToSrc(edge.dstAttr -- edge.srcAttr)
+    }
+
+    var graph = fixEdgeWeightGraph.mapVertices { case (vid, _) => Set(vid) }.cache()
+    val initLength = 1
+    var length = initLength
+    var messages = graph.aggregateMessages[Set[VertexId]](sendMsg(_), (a, b) =>
+      if (a == b)
+        a
+      else
+        a ++ b)
+    var activeMessages = messages.count()
+    var prevG: Graph[Set[VertexId], Double] = null
+    while (activeMessages > 0 && length <= maxIteration) {
+      prevG = graph
+      graph = graph.joinVertices[Set[VertexId]](messages)((id, dist, newDist) => {
+        if (newDist != Set())
+          newDist ++ dist
+        else
+          dist
+      }).cache()
+      print("iterator " + length + " finished! ")
+      length += 1
+      val oldMessages = messages
+      messages = graph.aggregateMessages[Set[VertexId]](sendMsg(_), (a, b) =>
+        if (a == b)
+          a
+        else
+          a ++ b).cache()
+      activeMessages = messages.filter(_._2.size > 0).count()
+      oldMessages.unpersist(blocking = false)
+      prevG.unpersistVertices(blocking = false)
+      prevG.edges.unpersist(blocking = false)
+    }
+    val subgraphVertexPair = graph.vertices.flatMap(e1 => e1._2.map(e2 => (e1._1, e2)))
+    val constructGraph = subgraphVertexPair.map(x => (x._2, x._1)).groupByKey().collect.map {
+      case (vid, vattr) =>
+
+        val subgraph = fixEdgeWeightGraph.subgraph(vpred = (i, d) => vattr.toSeq.contains(i))
+       (vid, subgraph.vertices, subgraph.edges)
+     //   (vid,subgraph)
+    }
+    val returnNeighbor=constructGraph.map { case (vid, vertices, edges) =>
+      var G = new MaxflowGraph()
+      edges.collect.map {case e =>
+        var a = vertices.filter(_._1 == e.srcId).collect().head
+        var b = vertices.filter(_._1 == e.dstId).collect().head
+        G.addEdge(new MaxflowVertexAttr(a._1,a._2),new MaxflowVertexAttr(b._1,b._2),e.attr)
+      }
+      (vid,G)
+    }
+    returnNeighbor
+  }
+
 
   /**
     * 每个节点的泄露函数
@@ -208,11 +275,11 @@ object MaxflowCreditTools {
     // 检查是否有路径
     if (residual.getGraph().keySet.find(_ == dst).get.capacity != (Double.MaxValue - 1)) {
       var links = new LinkedHashMap[MaxflowVertexAttr, MaxflowVertexAttr]
-      links +=residual.getGraph().keySet.find(_ == dst).get->null
+      links += residual.getGraph().keySet.find(_ == dst).get -> null
       while (links.keySet.last.id != src.id) {
         links += residual.getGraph().keySet.find(_.id == residual.getGraph().keySet.find(_ == links.keySet.last).get.edgeTo).get -> links.keySet.last
       }
-     parse(links,residual.getGraph().keySet.find(_.id == src.id).get)
+      parse(links, residual.getGraph().keySet.find(_.id == src.id).get)
     }
     else
       return List()
@@ -290,7 +357,8 @@ object MaxflowCreditTools {
                  val p=pathReverse.filter(_.distance==i).head
                  returnPath=returnPath:+ p
                }
-               return returnPath*/
+               return returnPath
+               */
         }
       }
       bigQueue = bigQueue.diff(queue)

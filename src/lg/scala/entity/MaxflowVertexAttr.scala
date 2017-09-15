@@ -10,7 +10,7 @@ class MaxflowVertexAttr(var id: VertexId, var initScore: Double, var distance: I
    var distance = Int.MaxValue - 1
    var capacity = Double.MaxValue - 1
  */
-  //到达该顶点的已知路径上的最后一个顶点
+  //到达该顶点的已知路径上的最后一个顶点，默认为0，节点编号中没有0L节点。
   var edgeTo:VertexId=0L
   def getValue: VertexId = id
 
