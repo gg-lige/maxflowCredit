@@ -2,15 +2,19 @@ package lg.scala.utils
 
 import java.math.BigDecimal
 import java.net.URI
+import java.util.Properties
 
-import lg.java.Parameters
+import lg.java.{DataBaseManager, Parameters}
 import lg.scala.entity.{InitEdgeAttr, InitVertexAttr, MaxflowGraph, MaxflowVertexAttr}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SQLContext}
+import org.apache.spark.sql.execution.datasources.jdbc.JdbcUtils
 import org.apache.spark.sql.functions.max
 import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.types._
 import org.apache.spark.storage.StorageLevel
 
 import scala.reflect.ClassTag
@@ -107,9 +111,9 @@ object InputOutputTools {
   }
 
   /**
-    * 从数据库中读取构建初始图的点和边(达的数据)
+    * 从数据库中读取构建初始图的点和边,重新编完号后投资、法人、股东边存入数据库添加反向影响，点存入HDFS
     */
-  def getFromOracle2(sqlContext: HiveContext): Graph[InitVertexAttr, InitEdgeAttr] = {
+  def saveE2Oracle_V2HDFS(sqlContext: HiveContext) = {
     val db = Map(
       "url" -> Parameters.DataBaseURL,
       "user" -> Parameters.DataBaseUserName,
@@ -118,10 +122,10 @@ object InputOutputTools {
     )
 
     import sqlContext.implicits._
-    val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_NSR_FDDBR"))).load()
-    val TZ_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_NSR_TZF"))).load()
+    val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_NSR_FDDBR"))).load()
+    val TZ_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_NSR_TZF"))).load()
     val GD_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_NSR_GD"))).load()
-    val JY_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.WWD_XFNSR_GFNSR"))).load()
+    //  val JY_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_XFNSR_GFNSR"))).load()
     val XYJB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_GROUNDTRUTH"))).load()
     val xyjb = XYJB_DF.select("VERTEXID", "XYGL_XYJB_DM", "FZ", "WTBZ").rdd
       .map(row => (row.getAs[BigDecimal]("VERTEXID").longValue(), (row.getAs[BigDecimal]("FZ").intValue(), row.getAs[String]("XYGL_XYJB_DM"), row.getAs[String]("WTBZ"))))
@@ -190,6 +194,7 @@ object InputOutputTools {
         val eattr = InitEdgeAttr(0.0, tzbl, 0.0, 0.0)
         ((srcid, dstid), eattr)
       }
+
     val gd_pc_cc = GD_DF.
       selectExpr("ZJHM", "VERTEXID", "TZBL").
       except(GD_NSR_DF.join(FR_DF, $"TZ_ZJHM" === $"ZJHM").select("TZ_ZJHM", "BTZ_VERTEXID", "TZBL")).
@@ -200,14 +205,14 @@ object InputOutputTools {
         ((srcid, dstid), eattr)
       }
 
-    val trade_cc = JY_DF.
-      select("xf_VERTEXID", "gf_VERTEXID", "jybl", "je", "se", "sl").
-      rdd.map { case row =>
-      val eattr = InitEdgeAttr(0.0, 0.0, 0.0, row.getAs[BigDecimal]("jybl").doubleValue())
-      eattr.trade_je = row.getAs[BigDecimal]("je").doubleValue()
-      eattr.tax_rate = row.getAs[BigDecimal]("sl").doubleValue()
-      ((row.getAs[BigDecimal]("xf_VERTEXID").longValue(), row.getAs[BigDecimal]("gf_VERTEXID").longValue()), eattr)
-    }
+    /*   val trade_cc = JY_DF.
+         select("xf_VERTEXID", "gf_VERTEXID", "jybl", "je", "se", "sl").
+         rdd.map { case row =>
+         val eattr = InitEdgeAttr(0.0, 0.0, 0.0, row.getAs[BigDecimal]("jybl").doubleValue())
+         eattr.trade_je = row.getAs[BigDecimal]("je").doubleValue()
+         eattr.tax_rate = row.getAs[BigDecimal]("sl").doubleValue()
+         ((row.getAs[BigDecimal]("xf_VERTEXID").longValue(), row.getAs[BigDecimal]("gf_VERTEXID").longValue()), eattr)
+       }*/
 
     val fddb_pc = FR_DF.select("VERTEXID", "ZJHM").
       rdd.map(row => (row.getAs[String](1), row.getAs[BigDecimal](0).longValue())).
@@ -217,15 +222,129 @@ object InputOutputTools {
         ((srcid, dstid), eattr)
       }
     // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环
-    val ALL_EDGE = tz_cc.union(gd_cc).union(tz_pc_cc).union(gd_pc_cc).union(trade_cc).union(fddb_pc).
+    val ALL_EDGE = tz_cc.union(gd_cc).union(tz_pc_cc).union(gd_pc_cc).union(fddb_pc).
       reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
       map(edge => Edge(edge._1._1, edge._1._2, edge._2)).
       persist(StorageLevel.MEMORY_AND_DISK)
 
+    //将所有点存入hdfs
+    ALL_VERTEX.saveAsObjectFile("/lg/maxflowCredit/startVertices")
+
+    val url = Parameters.DataBaseURL
+    val user = Parameters.DataBaseUserName
+    val password = Parameters.DataBaseUserPassword
+    val driver = Parameters.JDBCDriverString
+
+    DataBaseManager.execute("truncate table " + "lg_startEdge")
+    val schema = StructType(
+      List(
+        StructField("SRC", LongType, true),
+        StructField("DST", LongType, true),
+        StructField("W_LEGAL", DoubleType, true),
+        StructField("W_INVEST", DoubleType, true),
+        StructField("W_STOCKHOLDER", DoubleType, true)
+      )
+    )
+    val rowRDD = ALL_EDGE.filter(e => e.attr.w_invest != 0.0 || e.attr.w_legal != 0.0 || e.attr.w_stockholder != 0.0).map(p => Row(p.srcId, p.dstId, p.attr.w_legal, p.attr.w_invest, p.attr.w_stockholder)).distinct()
+    val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema)
+    val prop = new Properties()
+    prop.put("user", "tax")
+    prop.put("password", "taxgm2016")
+    prop.put("driver", "oracle.jdbc.driver.OracleDriver")
+    JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", prop)
+
+  }
+
+  /**
+    * 从数据库中读取构建初始图的点和边(达的数据)
+    */
+  def getFromOracle2(sqlContext: HiveContext, sc: SparkContext): Graph[InitVertexAttr, InitEdgeAttr] = {
+    val db = Map(
+      "url" -> Parameters.DataBaseURL,
+      "user" -> Parameters.DataBaseUserName,
+      "password" -> Parameters.DataBaseUserPassword,
+      "driver" -> Parameters.JDBCDriverString
+    )
+
+    import sqlContext.implicits._
+    val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_FR2"))).load()
+    val TZ_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_TZ2"))).load()
+    val GD_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_GD2"))).load()
+    val JY_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_XFNSR_GFNSR"))).load()
+
+    //计算边表
+    //法人边正反影响融合
+    val fr = FR_DF.select("SRC", "DST", "W_LEGAL").
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
+      .reduceByKey((a, b) => {
+        val f_positive = a * b    //正向融合因子
+        val f_inverse = (1 - a) * (1 - b)
+        f_positive / (f_positive + f_inverse)
+      }).map { case row =>
+      val eattr = InitEdgeAttr(row._2, 0.0, 0.0, 0.0)
+      (row._1, eattr)
+    }
+
+    //投资边正反影响融合
+    val tz = TZ_DF.select("SRC", "DST", "W_INVEST").
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
+      .reduceByKey((a, b) => {
+        val f_positive = a * b
+        val f_inverse = (1 - a) * (1 - b)
+        f_positive / (f_positive + f_inverse)
+      }).map { case row =>
+      val eattr = InitEdgeAttr(0.0, row._2, 0.0, 0.0)
+      (row._1, eattr)
+    }
+
+    //股东边正反影响融合
+    val gd = GD_DF.select("SRC", "DST", "W_STOCKHOLDER").
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
+      .reduceByKey((a, b) => {
+        val f_positive = a * b
+        val f_inverse = (1 - a) * (1 - b)
+        f_positive / (f_positive + f_inverse)
+      }).map { case row =>
+      val eattr = InitEdgeAttr(0.0, 0.0, row._2, 0.0)
+      (row._1, eattr)
+    }
+
+
+    //========================================
+    /*
+    val tz_forward = tz_cc.union(tz_pc_cc).reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2)
+    val tz_backward = tz_forward.collect.map {
+      case (v, e) =>
+        val srcOutSum = tz_forward.filter(_._1._1 == v._1).map(_._2.w_invest).reduce(_ + _)
+        ((v._2, v._1), InitEdgeAttr(0.0, e.w_invest / srcOutSum, 0.0, 0.0))
+    }
+    val tz_fusion= tz_forward.union(tz_backward).reduceByKey((a,b)=> {
+      val f_invest_positive = a.w_invest * b.w_invest
+      val f_invest_inverse = (1 - a.w_invest) * (1 - b.w_invest)
+      InitEdgeAttr(a.w_legal,f_invest_positive / (f_invest_positive + f_invest_inverse),a.w_stockholder,a.w_trade)
+    })
+  */
+    //========================================
+
+    val jy = JY_DF.
+      select("xf_VERTEXID", "gf_VERTEXID", "jybl", "je", "se", "sl").
+      rdd.map { case row =>
+      val eattr = InitEdgeAttr(0.0, 0.0, 0.0, row.getAs[BigDecimal]("jybl").doubleValue())
+      eattr.trade_je = row.getAs[BigDecimal]("je").doubleValue()
+      eattr.tax_rate = row.getAs[BigDecimal]("sl").doubleValue()
+      ((row.getAs[BigDecimal]("xf_VERTEXID").longValue(), row.getAs[BigDecimal]("gf_VERTEXID").longValue()), eattr)
+    }
+
+    // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环
+    val ALL_EDGE = fr.union(tz).union(gd).union(jy).
+      reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
+      map(edge => Edge(edge._1._1, edge._1._2, edge._2)).
+      persist(StorageLevel.MEMORY_AND_DISK)
+    val ALL_VERTEX = sc.objectFile[(Long, InitVertexAttr)]("/lg/maxflowCredit/startVertices").repartition(128)
     val degrees = Graph(ALL_VERTEX, ALL_EDGE).degrees.persist
     // 使用度大于0的顶点和边构建图
-
     Graph(ALL_VERTEX.join(degrees).map(vertex => (vertex._1, vertex._2._1)), ALL_EDGE).persist()
+
   }
 
   /**
@@ -240,14 +359,14 @@ object InputOutputTools {
     val edgesTxt = sc.textFile(edgePath)
     val vertexTxt = sc.textFile(vertexPath)
     val vertices = vertexTxt.filter(!_.startsWith("id")).map(_.split(",")).map {
-      case node => val vtemp = MaxflowVertexAttr(node(0).toLong,node(1).toDouble)
+      case node => val vtemp = MaxflowVertexAttr(node(0).toLong, node(1).toDouble)
         vtemp
     }.collect()
     var G = new MaxflowGraph()
     val edges = edgesTxt.filter(!_.startsWith("src")).map(_.split(",")).map {
       case e => {
-        val a=vertices.filter(_.id==e(0).toLong).toList.head
-        val b=vertices.filter(_.id==e(1).toLong).toList.head
+        val a = vertices.filter(_.id == e(0).toLong).toList.head
+        val b = vertices.filter(_.id == e(1).toLong).toList.head
         G.addEdge(a, b, e(2).toDouble)
       }
     }

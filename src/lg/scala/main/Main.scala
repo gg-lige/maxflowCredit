@@ -28,17 +28,20 @@ object Main {
     val sc = new SparkContext(conf)
     val hiveContext = new HiveContext(sc)
 
-    //如果不存在最大流信用网络，则从初始化tpin开始
-    /* if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/vertices")) {
-        //  val tpin = InputOutputTools.getFromOracle(hiveContext).persist()
-        val tpin = InputOutputTools.getFromOracle2(hiveContext).persist()
-        println("\nafter construct:  \n节点数：" + tpin.vertices.count)
-        println("边数：" + tpin.edges.count)
-        // 节点数：2873109      边数：2411724
-        InputOutputTools.saveAsObjectFile(tpin, sc, "/lg/maxflowCredit/initVertices", "/lg/maxflowCredit/initEdges")
-      }
-      val tpinFromObject = InputOutputTools.getFromObjectFile[InitVertexAttr, InitEdgeAttr](sc, "/lg/maxflowCredit/initVertices", "/lg/maxflowCredit/initEdges")
+    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/startVertices")) {
+      val edge_temp = InputOutputTools.saveE2Oracle_V2HDFS(hiveContext)
+    } //结束后在数据库进行操作
 
+    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/initVertices")) {
+      val tpin = InputOutputTools.getFromOracle2(hiveContext, sc)
+      println("\nafter construct:  \n节点数：" + tpin.vertices.count)
+      println("边数：" + tpin.edges.count)
+      // 节点数：2792215     边数：3944847
+      InputOutputTools.saveAsObjectFile(tpin, sc, "/lg/maxflowCredit/initVertices", "/lg/maxflowCredit/initEdges")
+    }
+
+    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/vertices")) {
+      val tpinFromObject = InputOutputTools.getFromObjectFile[InitVertexAttr, InitEdgeAttr](sc, "/lg/maxflowCredit/initVertices", "/lg/maxflowCredit/initEdges")
       //添加控制人亲密度边
       val tpinWithCohesion = CreditGraphTools.addCohesion(tpinFromObject, weight = 0.0, degree = 1).persist()
       //抽取所有纳税人
@@ -47,47 +50,49 @@ object Main {
       println("边数：" + tpin_NSR0.edges.count)
       //节点数：1495357    边数：2075879
       InputOutputTools.saveAsObjectFile(tpin_NSR0, sc, "/lg/maxflowCredit/vertices", "/lg/maxflowCredit/edges")
+    }
 
+    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/fixVertices")) {
       val tpin = InputOutputTools.getFromObjectFile[VertexAttr, EdgeAttr](sc, "/lg/maxflowCredit/vertices", "/lg/maxflowCredit/edges").persist()
-
       //修正图上的边权值,并提取点度>0的节点（信息融合等原理）,取子图，只选择节点有纳税信用评分的节点
       val fixEdgeWeightGraph = MaxflowCreditTools.fixEdgeWeight(tpin).persist()
       println("\nfixEdgeWeightGraph:  \n节点数：" + fixEdgeWeightGraph.vertices.count)
       println("边数：" + fixEdgeWeightGraph.edges.count)
-     InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
-  */ val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
+      InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
+    }
+    val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
 
     //各节点向外扩展3步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
     val selectGraph0 = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D)
     val degreeGra = selectGraph0.degrees
     val selectGraph: Graph[(Double, Boolean), Double] = Graph(selectGraph0.vertices.join(degreeGra).map(v => (v._1, v._2._1)), selectGraph0.edges)
+
+    println("\nselectGraph:  \n节点数：" + selectGraph.vertices.count)
+    println("边数：" + selectGraph.edges.count)
+    //验证
+    println("\n节点中有问题的：" + selectGraph.vertices.filter(_._2._2 == true).count)
+    val extendPair = MaxflowCreditTools.extendSubgraph(selectGraph.mapVertices((vid, vattr) => (vattr._1)),6)
+    //extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph310")
     /*
-       println("\nselectGraph:  \n节点数：" + selectGraph.vertices.count)
-        println("边数：" + selectGraph.edges.count)
-        println("\n节点中有问题的：" + selectGraph.vertices.filter(_._2._2 == true).count)
-        val extendPair = MaxflowCreditTools.extendSubgraph(selectGraph.mapVertices((vid, vattr) => (vattr._1)))
-        extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph37")
-        println("extendPair运行Done!")
+        InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph7_9")
+        extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph")
+        val extendPair = InputOutputTools.get3RDDAsObjectFile[VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]]](sc, "/lg/maxflowCredit/extendSubgraph").persist()
+        val vGraph = InputOutputTools.getFromCsv(sc, "/lg/maxflowCredit/vertices.csv", "/lg/maxflowCredit/edges.csv")
+        val extendPair = sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph310").repartition(128)
+        extendPair.map(_._2.getAllEdge().size).max
+        extendPair.map(_._2.getGraph().keySet.size).max
     */
-    //  InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph7_9")
-    //  extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph")
-    //  val extendPair = InputOutputTools.get3RDDAsObjectFile[VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]]](sc, "/lg/maxflowCredit/extendSubgraph").persist()
-    //  val vGraph =InputOutputTools.getFromCsv(sc,"/lg/maxflowCredit/vertices.csv","/lg/maxflowCredit/edges.csv")
 
-    val extendPair = sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph37").repartition(128)
-    /*   extendPair.map(_._2.getAllEdge().size).max
-       extendPair.map(_._2.getGraph().keySet.size).max
-       */
     //运行最大流算法
-
-    val maxflowCredit = MaxflowCreditTools.run(extendPair)
+    println("最大流Start!")
+    val maxflowCredit = MaxflowCreditTools.run(extendPair, 0.6)
     //  maxflowCredit.saveAsTextFile("/lg/maxflowCredit/maxflowScore2")
     //  println("最大流运行Done!")
     //  验证
     val experimentResult = ExperimentTools.verify(sc, maxflowCredit.collect, selectGraph)
     println("验证Done!")
-    InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/maxflowScore37_o", experimentResult._1, "/lg/maxflowCredit/maxflowScore37_t")
-    experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort37")
+    InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/maxflowScore_o3", experimentResult._1, "/lg/maxflowCredit/maxflowScore_t3")
+    experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort3")
 
   }
 }

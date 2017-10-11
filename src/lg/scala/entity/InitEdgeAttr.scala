@@ -12,8 +12,8 @@ class InitEdgeAttr(var w_legal: Double, var w_invest: Double, var w_stockholder:
   var is_Cohesion: Boolean = false
   var w_cohesion: Double = 0.0
 
-  override def toString = s"InitEdgeAttr(法人:$w_legal, 投资:$w_invest, 股东:$w_stockholder, 交易:$w_trade)"
 
+  override def toString = s"InitEdgeAttr(法人:$w_legal, 投资:$w_invest, 股东:$w_stockholder, 交易:$w_trade)"
 
 
   //前件路径
@@ -29,6 +29,18 @@ class InitEdgeAttr(var w_legal: Double, var w_invest: Double, var w_stockholder:
 }
 
 object InitEdgeAttr {
+  /*
+  def fusion(a: InitEdgeAttr, b: InitEdgeAttr) = {
+    val f_legal_positive = a.w_legal * b.w_legal
+    val f_legal_inverse = (1 - a.w_legal) * (1 - b.w_legal)
+    val f_invest_positive = a.w_invest * b.w_invest
+    val f_invest_inverse = (1 - a.w_invest) * (1 - b.w_invest)
+    val f_stockholder_positive = a.w_stockholder * b.w_stockholder
+    val f_stockholder_inverse = (1 - a.w_stockholder) * (1 - b.w_stockholder)
+    val toReturn = new InitEdgeAttr(f_legal_positive / (f_legal_positive + f_legal_inverse), f_invest_positive / (f_invest_positive + f_invest_inverse), f_stockholder_positive / (f_stockholder_positive + f_stockholder_inverse), 0.0)
+    toReturn
+  }
+*/
   def apply(w_legal: Double = 0.0, w_invest: Double = 0.0, w_stockholder: Double = 0.0, w_trade: Double = 0.0): InitEdgeAttr = {
     val re_legal = if (w_legal > 1.0) 1.0 else w_legal
     val re_invest = if (w_invest > 1.0) 1.0 else w_invest
@@ -36,8 +48,9 @@ object InitEdgeAttr {
     val re_trade = if (w_trade > 1.0) 1.0 else w_trade
     new InitEdgeAttr(re_legal, re_invest, re_stockholder, re_trade)
   }
+
   def combine(a: InitEdgeAttr, b: InitEdgeAttr) = {
-    val toReturn = new InitEdgeAttr(a.w_legal + b.w_legal, a.w_invest + b.w_invest,a.w_stockholder+b.w_stockholder, a.w_trade + b.w_trade)
+    val toReturn = new InitEdgeAttr(a.w_legal + b.w_legal, a.w_invest + b.w_invest, a.w_stockholder + b.w_stockholder, a.w_trade + b.w_trade)
     toReturn.trade_je = a.trade_je + b.trade_je
     toReturn
   }
