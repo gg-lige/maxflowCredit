@@ -19,7 +19,8 @@ object MaxflowCreditTools {
     * 修正图上的边权值（DS信息融合等原理）
     */
   def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[(Double, Boolean), Double] = {
-    val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
+     //  val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
+    val edgetemp = tpin1.mapEdges(e=>EdgeAttr.fusion(e)).edges
     val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
     val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
     val vertexDegree = totalGraph.degrees.persist()

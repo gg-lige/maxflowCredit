@@ -340,6 +340,7 @@ object InputOutputTools {
       reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
       map(edge => Edge(edge._1._1, edge._1._2, edge._2)).
       persist(StorageLevel.MEMORY_AND_DISK)
+
     val ALL_VERTEX = sc.objectFile[(Long, InitVertexAttr)]("/lg/maxflowCredit/startVertices").repartition(128)
     val degrees = Graph(ALL_VERTEX, ALL_EDGE).degrees.persist
     // 使用度大于0的顶点和边构建图
