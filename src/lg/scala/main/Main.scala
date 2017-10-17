@@ -43,60 +43,74 @@ object Main {
     if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/vertices")) {
       val tpinFromObject = InputOutputTools.getFromObjectFile[InitVertexAttr, InitEdgeAttr](sc, "/lg/maxflowCredit/initVertices", "/lg/maxflowCredit/initEdges")
       //添加控制人亲密度边
-      val tpinWithCohesion = CreditGraphTools.addCohesion(tpinFromObject, weight = 0.0, degree = 1).persist()
-   //   tpinWithCohesion.edges.repartition(1).saveAsTextFile("/lg/maxflowCredit/tpinWithCohesionE")
+      //    val tpinWithCohesion = CreditGraphTools.addCohesion(tpinFromObject, weight = 0.0, degree = 1).persist()
       //抽取所有纳税人
-      val tpin_NSR0 = CreditGraphTools.extractNSR(tpinWithCohesion)
-  //   tpin_NSR0.edges.repartition(1).saveAsTextFile("/lg/maxflowCredit/tpin_NSR0E")
+      //     val tpin_NSR0 = CreditGraphTools.extractNSR(tpinWithCohesion)
+      val tpin_NSR0 = CreditGraphTools.extractNSR2(tpinFromObject)
       println("\n纳税人网络: after construct企业:  \n节点数：" + tpin_NSR0.vertices.count)
       println("边数：" + tpin_NSR0.edges.count)
-      //节点数：1495357    边数：2075879
+      //节点数：1483300    边数：706787
       InputOutputTools.saveAsObjectFile(tpin_NSR0, sc, "/lg/maxflowCredit/vertices", "/lg/maxflowCredit/edges")
     }
 
-        if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/fixVertices")) {
-          val tpin = InputOutputTools.getFromObjectFile[VertexAttr, EdgeAttr](sc, "/lg/maxflowCredit/vertices", "/lg/maxflowCredit/edges").persist()
-          //修正图上的边权值,并提取点度>0的节点（信息融合等原理）,取子图，只选择节点有纳税信用评分的节点
-          val fixEdgeWeightGraph = MaxflowCreditTools.fixEdgeWeight(tpin).persist()
-          println("\n修正边权值fixEdgeWeightGraph:  \n节点数：" + fixEdgeWeightGraph.vertices.count)
-          println("边数：" + fixEdgeWeightGraph.edges.count)
-          InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
-        }
-         val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
 
-         //各节点向外扩展3步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
-         val selectGraph0 = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D)
-         val degreeGra = selectGraph0.degrees
-         val selectGraph: Graph[(Double, Boolean), Double] = Graph(selectGraph0.vertices.join(degreeGra).map(v => (v._1, v._2._1)), selectGraph0.edges)
+    /*
+        hadoop fs -rm -r /lg/maxflowCredit/fixVertices
+        hadoop fs -rm -r /lg/maxflowCredit/fixEdges
+    */
+    if (!InputOutputTools.Exist(sc, "/lg/maxflowCredit/fixVertices")) {
+      val tpin = InputOutputTools.getFromObjectFile[VertexAttr, EdgeAttr](sc, "/lg/maxflowCredit/vertices", "/lg/maxflowCredit/edges").persist()
+      //修正图上的边权值,并提取点度>0的节点（信息融合等原理）,
+      val fixEdgeWeightGraph = MaxflowCreditTools.fixEdgeWeight(tpin).persist()
+      println("\n修正边权值fixEdgeWeightGraph:  \n节点数：" + fixEdgeWeightGraph.vertices.count)
+      println("边数：" + fixEdgeWeightGraph.edges.count)
+      //节点数：124782   边数：373051
+      InputOutputTools.saveAsObjectFile(fixEdgeWeightGraph, sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges")
+    }
+    /*
+        val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/fixVertices", "/lg/maxflowCredit/fixEdges").persist()
+        //取子图，只选择节点有纳税信用评分的节点
 
-         println("\nselectGraph:  \n节点数：" + selectGraph.vertices.count)
-         println("边数：" + selectGraph.edges.count)
-         //验证
-         println("\n节点中有问题的：" + selectGraph.vertices.filter(_._2._2 == true).count)
-         val extendPair = MaxflowCreditTools.extendSubgraph(selectGraph.mapVertices((vid, vattr) => (vattr._1)),6)
-         //extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph310")
-         /*
-             InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph7_9")
-             extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph")
-             val extendPair = InputOutputTools.get3RDDAsObjectFile[VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]]](sc, "/lg/maxflowCredit/extendSubgraph").persist()
-             val vGraph = InputOutputTools.getFromCsv(sc, "/lg/maxflowCredit/vertices.csv", "/lg/maxflowCredit/edges.csv")
-             val extendPair = sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph310").repartition(128)
-             extendPair.map(_._2.getAllEdge().size).max
-             extendPair.map(_._2.getGraph().keySet.size).max
-         */
+        val selectGraph0 = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D)
+        val degreeGra = selectGraph0.degrees
+        val selectGraph: Graph[(Double, Boolean), Double] = Graph(selectGraph0.vertices.join(degreeGra).map(v => (v._1, v._2._1)), selectGraph0.edges)
+     //   val selectGraph=fixEdgeWeightGraph
+        println("\n抽取信用节点selectGraph:  \n节点数：" + selectGraph.vertices.count)
+        println("边数：" + selectGraph.edges.count)
+        //节点数：5771    边数：7451
+        //验证
+        println("\n节点中有问题的：" + selectGraph.vertices.filter(_._2._2 == true).count)
+        //各节点向外扩展3步，每步选择邻近的前selectTopN个权值较大的点向外扩展，得到RDD（节点，所属子图）
+        val extendPair = MaxflowCreditTools.extendSubgraph(selectGraph.mapVertices((vid, vattr) => (vattr._1)), 6)
+      */
+    val selectGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/lg/maxflowCredit/selectVertices", "/lg/maxflowCredit/selectEdges").persist()
+    val extendPair = sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph").repartition(128)
+    /*
+        InputOutputTools.save3RDDAsObjectFile(extendPair, sc, "/lg/maxflowCredit/extendSubgraph7_9")
+        extendPair.saveAsObjectFile("/lg/maxflowCredit/extendSubgraph")
+        val extendPair = InputOutputTools.get3RDDAsObjectFile[VertexId, Seq[(VertexId, Double)], Seq[Edge[Double]]](sc, "/lg/maxflowCredit/extendSubgraph").persist()
+        val vGraph = InputOutputTools.getFromCsv(sc, "/lg/maxflowCredit/vertices.csv", "/lg/maxflowCredit/edges.csv")
+        val extendPair = sc.objectFile[(VertexId, MaxflowGraph)]("/lg/maxflowCredit/extendSubgraph310").repartition(128)
+        extendPair.map(_._2.getAllEdge().size).max
+        extendPair.map(_._2.getGraph().keySet.size).max
+    */
 
-         //运行最大流算法
-         println("最大流Start!")
-         val maxflowCredit = MaxflowCreditTools.run(extendPair, 0.4)
-         //  maxflowCredit.saveAsTextFile("/lg/maxflowCredit/maxflowScore2")
-         //  println("最大流运行Done!")
-         //  验证
-         val experimentResult = ExperimentTools.verify(sc, maxflowCredit.collect, selectGraph)
-         println("验证Done!")
-         InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/maxflowScore_o3", experimentResult._1, "/lg/maxflowCredit/maxflowScore_t3")
-         experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/TopSort3")
+    //运行最大流算法
+    println("最大流Start!")
 
-  }
+    var j = 0.1
+    for (i <- 86 to 90) {
+
+        val maxflowCredit = MaxflowCreditTools.run3(extendPair, j)
+
+        //  验证
+        val experimentResult = ExperimentTools.verify(sc, maxflowCredit.collect, selectGraph)
+        println("验证Done!"+i)
+     //   InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/o"+i, experimentResult._1, "/lg/maxflowCredit/t"+i)
+        experimentResult._2.repartition(1).sortByKey(true).repartition(1).saveAsTextFile("/lg/maxflowCredit/s"+i)
+        j = j + 0.2
+      }
+    }
 }
 
 /*

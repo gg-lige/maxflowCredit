@@ -22,9 +22,12 @@ object MaxflowCreditTools {
      //  val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
     val edgetemp = tpin1.mapEdges(e=>EdgeAttr.fusion(e)).edges
     val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
+
     val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
     val vertexDegree = totalGraph.degrees.persist()
     Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
+
+ //   Graph(vertextemp,edgetemp)
   }
 
   /**
@@ -159,30 +162,74 @@ object MaxflowCreditTools {
     if (x == 0)
       toReturn = 1
     else
-      toReturn = 0.9
+     // toReturn = 0.9
+     // toReturn = math.cos(0.13x)
+    //  toReturn = 1-math.pow(15,-x)
+      toReturn = 1-math.pow(x+1,-5)
     toReturn
   }
+
+
 
   /**
     * 计算最大流分数
     */
-  def run(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
-    var count = 0
+
+  def run3(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+    extendPair.map { case (vid, vGraph) =>
+      var pairflow = 0D
+      var allpairflow = 0D
+      var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
+      for (src <- vGraph.getGraph().keySet.-(dst)) {
+        //调用最大流算法计算pair节点n步之内所有节点对其传递值
+        val flowtemp = maxflowNotGraphX(vGraph, src, dst)
+        pairflow += flowtemp._3 * (1-src.initScore)
+        allpairflow += flowtemp._3/src.initScore * (1-src.initScore)
+      }
+      val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow/allpairflow
+      (vid, fusionflow)
+    }
+  }
+
+
+  /**
+    * 计算最大流分数
+    */
+
+  def run2(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
     extendPair.map { case (vid, vGraph) =>
       var pairflow = 0D
       var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
       for (src <- vGraph.getGraph().keySet.-(dst)) {
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
         val flowtemp = maxflowNotGraphX(vGraph, src, dst)
-        pairflow += flowtemp._3 * (100 - src.initScore * 100) / 100 * src.initScore * 100
+        //1。    pairflow += flowtemp._3 * (100 - src.initScore * 100) / 100 * src.initScore * 100
+        pairflow += flowtemp._3 * (1-src.initScore)
       }
-      val fusionflow = lambda * dst.initScore * 100 + (1 - lambda) * pairflow
-      count = count + 1
-      if (count % 100 == 0)
-        println(count)
+      val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow
       (vid, fusionflow)
     }
   }
+
+
+  /**
+    * 计算最大流分数
+    */
+
+def run1(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+  extendPair.map { case (vid, vGraph) =>
+    var allflow = 0D
+    var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
+    for (src <- vGraph.getGraph().keySet.-(dst)) {
+      //调用最大流算法计算pair节点n步之内所有节点对其传递值
+      val flowtemp = maxflowNotGraphX(vGraph, src, dst)
+      allflow += flowtemp._3
+    }
+    (vid, allflow)
+  }
+}
+
+
 
   /*
   测试用例

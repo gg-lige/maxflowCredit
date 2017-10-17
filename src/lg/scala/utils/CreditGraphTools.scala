@@ -11,6 +11,38 @@ object CreditGraphTools {
   type Path = Seq[(VertexId, Double)]
   type Paths = Seq[Seq[(VertexId, Double)]]
 
+  def extractNSR2(graph: Graph[InitVertexAttr, InitEdgeAttr]): Graph[VertexAttr, EdgeAttr] = {
+    graph.subgraph(vpred = (vid, vattr) => vattr.isNSR == true)
+      .mapVertices { (vid, vattr) =>
+        val newVattr = VertexAttr(vattr.sbh, vattr.name)
+        newVattr.xydj = vattr.xydj
+        newVattr.xyfz = vattr.xyfz
+        newVattr.wtbz= vattr.wtbz
+        newVattr
+      }
+      .mapEdges { edge =>
+        val newEattr = EdgeAttr()
+        if (edge.attr.w_invest > 1D)
+          newEattr.w_invest = 1.0
+        else
+          newEattr.w_invest = edge.attr.w_invest
+        if (edge.attr.w_stockholder > 1D)
+          newEattr.w_stockholder = 1.0
+        else
+          newEattr.w_stockholder = edge.attr.w_stockholder
+        if (edge.attr.w_trade > 1D)
+          newEattr.w_trade = 1.0
+        else
+          newEattr.w_trade = edge.attr.w_trade
+        if (edge.attr.w_legal > 1D)
+          newEattr.w_cohesion = 1.0
+        else
+          newEattr.w_cohesion = edge.attr.w_legal
+        newEattr
+      }
+  }
+
+
   /**
     * 抽取出仅含公司的tpin大图
     */
