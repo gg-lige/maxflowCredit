@@ -256,7 +256,7 @@ object InputOutputTools {
   }
 
   /**
-    * 从数据库中读取构建初始图的点和边(达的数据)
+    * 从数据库中读取构建初始图的点和边
     */
   def getFromOracle2(sqlContext: HiveContext, sc: SparkContext): Graph[InitVertexAttr, InitEdgeAttr] = {
     val db = Map(
@@ -373,5 +373,38 @@ object InputOutputTools {
     }
     return G
   }
+
+/*
+  def saveMaxflowResultToOracle(finalScore:Graph[(Int,Int,Boolean), Double],sqlContext:SQLContext,
+    edge_dst:String="WWD_XYCD_EDGE_FINAL",vertex_dst:String="WWD_XYCD_VERTEX_FINAL",bypass:Boolean=false): Unit = {
+      if(!bypass){
+        DataBaseManager.execute("truncate table " + edge_dst)
+        val schema = StructType(
+          List(
+            StructField("source", LongType, true),
+            StructField("target", LongType, true),
+            StructField("FINAL_INFLUENCE", DoubleType, true)
+          )
+        )
+        val rowRDD = finalScore.edges.map(e=> Row(e.srcId,e.dstId,e.attr)).distinct()
+
+        val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema).repartition(3)
+        JdbcUtils.saveTable(edgeDataFrame, url, edge_dst, properties)
+      }
+
+      DataBaseManager.execute("truncate table " + vertex_dst)
+      val schema1 = StructType(
+        List(
+          StructField("VERTICE", LongType, true),
+          StructField("INITSCORE", IntegerType, true),
+          StructField("FINALSCORE", IntegerType, true)
+        )
+      )
+      val rowRDD1 = finalScore.vertices.map(p => Row(p._1,p._2._1,p._2._2)).distinct()
+      val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schema1).repartition(3)
+      JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
+    }
+*/
+
 
 }

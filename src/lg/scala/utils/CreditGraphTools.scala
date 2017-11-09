@@ -175,7 +175,7 @@ object CreditGraphTools {
         Seq[Seq[(VertexId, Double)]]()
     }
 
-    //此处无法使用反向获取路径，,即使用正向获取路径，要求源点为人
+    //此处无法使用反向获取路径，,即使用正向获取路径，要求源点为人 ，修正最大迭代次数为2，原来为3
     val messageOfControls = getPath(initialGraph, weight, maxIteration = 3).mapValues(lists => lists.filter(_.size > 1)
       .map {
         case list => val influ = list.map(_._2).min //一条控制链上有多条边，选择该链上权值最小的
@@ -196,4 +196,8 @@ object CreditGraphTools {
     }
     Graph(graph.vertices, graph.edges.union(newCohesionEdges))
   }
+
+
+
+
 }

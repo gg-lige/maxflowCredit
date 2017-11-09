@@ -19,26 +19,41 @@ object MaxflowCreditTools {
     * 修正图上的边权值（DS信息融合等原理）
     */
   def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]): Graph[(Double, Boolean), Double] = {
-     //  val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
-    val edgetemp = tpin1.mapEdges(e=>EdgeAttr.fusion(e)).edges
+    //  val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
+    val edgetemp = tpin1.mapEdges(e => EdgeAttr.fusion(e)).edges
     val vertextemp = tpin1.vertices.map(v => (v._1, (v._2.xyfz / 100.0, v._2.wtbz)))
 
-    val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
-    val vertexDegree = totalGraph.degrees.persist()
-    Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
+    /*
+        val totalGraph = Graph(vertextemp, edgetemp).subgraph(epred = edgeTriplet => edgeTriplet.attr > 0.01)
+        val vertexDegree = totalGraph.degrees.persist()
+        Graph(totalGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), totalGraph.edges)
+     */
+    val vertexDegree = tpin1.degrees.persist()
+    Graph(vertextemp.join(vertexDegree).map(v => (v._1, v._2._1)), edgetemp)
 
- //   Graph(vertextemp,edgetemp)
   }
 
   /**
     * 节点上存储子图【选用这个】
     */
   def extendSubgraph(fixEdgeWeightGraph: Graph[Double, Double], selectTopN: Int): RDD[(VertexId, MaxflowGraph)] = {
+
     val neighbor = fixEdgeWeightGraph.aggregateMessages[Set[(VertexId, VertexId, Double, Double, Boolean)]](triple => {
       //发送的消息为：节点编号，(源终节点编号),边权重，节点属性，向源|终点发
-      triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
-      triple.sendToDst(Set((triple.srcId, triple.dstId, triple.attr, triple.srcAttr, true)))
+      if (triple.srcId != triple.dstId) { //去环
+        triple.sendToSrc(Set((triple.dstId, triple.srcId, triple.attr, triple.dstAttr, false)))
+        triple.sendToDst(Set((triple.srcId, triple.dstId, triple.attr, triple.srcAttr, true)))
+      }
     }, _ ++ _)
+
+    val neighborVertex1 = neighbor.map { case (vid, vattr) =>
+      val newattr = vattr.toSeq.filter(_._5 == true)
+      if (newattr.size > selectTopN)
+        (vid, newattr.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
+      else
+        (vid, newattr)
+    }.cache()
+
     val neighborVertex = neighbor.map { case (vid, vattr) =>
       if (vattr.size > selectTopN)
         (vid, vattr.toSeq.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
@@ -47,7 +62,8 @@ object MaxflowCreditTools {
     }.cache()
 
     //一层邻居 （社团，不包含节点自身）
-    val neighborPair1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct
+    val neighborPair1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct //只指向中心节点
+  //  val neighborPairAll1 = neighborVertex.map(x => (x._1, x._2)).flatMap(v1 => v1._2.map(v2 => (v1._1, v2))).distinct //指向及指出中心节点
     //二层邻居
     val neighborPair2 = neighborPair1.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     //三层邻居
@@ -58,37 +74,38 @@ object MaxflowCreditTools {
     //   val neighborPair5 = neighborPair4.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
     //六层邻居
     //  val neighborPair6 = neighborPair5.map(x => (x._2._1, x._1)).join(neighborPair1).map(x => (x._2._1, x._2._2)).distinct
-    val neighborPair = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
+    //后面构子图时为中心节点添加边权重，因为前面只选择了前6名的较高权重，有可能把中心节点删除掉
+    val neighborPairgroup = neighborPair1.union(neighborPair2).union(neighborPair3).distinct
+    val neighborPair = neighborPairgroup.join(fixEdgeWeightGraph.vertices).map(v => (v._1, (v._2._1, v._2._2)))
 
-    val returnNeighbor = neighborPair.aggregateByKey(Set[(VertexId, VertexId, Double, Double, Boolean)]())(_ += _, _ ++ _)
-      .map { case (vid, vattr) =>
-        var e = HashMap[(VertexId, VertexId), Double]()
-        var v = HashMap[VertexId, Double]()
+    val returnNeighbor = neighborPair.aggregateByKey(Set[((VertexId, VertexId, Double, Double, Boolean), Double)]())(_ += _, _ ++ _).map { case (vid, vattr) =>
+      var e = HashMap[(VertexId, VertexId), Double]()
+      var v = HashMap[VertexId, Double]()
 
-        vattr.foreach { case (vSubId, vRelate, eWeight, vWeight, srcOrdst) =>
-          v.put(vSubId, vWeight)
-          if (srcOrdst == true)
-            e.put((vSubId, vRelate), eWeight)
-          else
-            e.put((vRelate, vSubId), eWeight)
-        }
-        if (!v.contains(vid)) {
-          //  RDD里面不能套RDD，所以collect不到信息，会报空指针异常
-          //  v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
-          v.put(vid, 0D)
-        }
-        /* val subVertex: List[MaxflowVertexAttr] = v.map(v => MaxflowVertexAttr(v._1, v._2)).toList
-         val subEdge: List[MaxflowEdgeAttr] = e.map(e => MaxflowEdgeAttr(e._1._1, e._1._2, e._2)).toList
-         (vid, subVertex, subEdge)*/
-
-        var G = new MaxflowGraph()
-        e.map { case ((src, dst), eweight) =>
-          var a = v.filter(_._1 == src).toList.head
-          var b = v.filter(_._1 == dst).toList.head
-          G.addEdge(MaxflowVertexAttr(a._1, a._2), MaxflowVertexAttr(b._1, b._2), eweight)
-        }
-        (vid, G)
+      vattr.foreach { case ((vSubId, vRelate, eWeight, vWeight, srcOrdst), vSubWeight) =>
+        v.put(vSubId, vWeight)
+        if (srcOrdst == true)
+          e.put((vSubId, vRelate), eWeight)
+        else
+          e.put((vRelate, vSubId), eWeight)
       }
+      if (!v.contains(vid)) {
+        //  RDD里面不能套RDD，所以collect不到信息，会报空指针异常
+        //  v.put(vid, fixEdgeWeightGraph.vertices.filter(_._1 == vid).map(_._2).head)
+        v.put(vid, vattr.map(_._2).head)
+      }
+      /* val subVertex: List[MaxflowVertexAttr] = v.map(v => MaxflowVertexAttr(v._1, v._2)).toList
+       val subEdge: List[MaxflowEdgeAttr] = e.map(e => MaxflowEdgeAttr(e._1._1, e._1._2, e._2)).toList
+       (vid, subVertex, subEdge)*/
+
+      var G = new MaxflowGraph()
+      e.map { case ((src, dst), eweight) =>
+        var a = v.filter(_._1 == src).toList.head
+        var b = v.filter(_._1 == dst).toList.head
+        G.addEdge(MaxflowVertexAttr(a._1, a._2), MaxflowVertexAttr(b._1, b._2), eweight)
+      }
+      (vid, G)
+    }
     returnNeighbor
   }
 
@@ -133,10 +150,10 @@ object MaxflowCreditTools {
       prevG.unpersistVertices(blocking = false)
       prevG.edges.unpersist(blocking = false)
     }
+    /*
     val subgraphVertexPair = graph.vertices.flatMap(e1 => e1._2.map(e2 => (e1._1, e2)))
     val constructGraph = subgraphVertexPair.map(x => (x._2, x._1)).groupByKey().collect.map {
       case (vid, vattr) =>
-
         val subgraph = fixEdgeWeightGraph.subgraph(vpred = (i, d) => vattr.toSeq.contains(i))
         (vid, subgraph.vertices, subgraph.edges)
       //   (vid,subgraph)
@@ -150,7 +167,8 @@ object MaxflowCreditTools {
       }
       (vid, G)
     }
-    returnNeighbor
+    returnNeighbor*/
+
   }
 
 
@@ -162,20 +180,18 @@ object MaxflowCreditTools {
     if (x == 0)
       toReturn = 1
     else
-     // toReturn = 0.9
-     // toReturn = math.cos(0.13x)
+    // toReturn = 0.9
+    // toReturn = math.cos(0.13x)
     //  toReturn = 1-math.pow(15,-x)
-      toReturn = 1-math.pow(x+1,-5)
+      toReturn = 1 - math.pow(x + 1, -5)
     toReturn
   }
-
-
 
   /**
     * 计算最大流分数
     */
 
-  def run3(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+  def run4(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
     extendPair.map { case (vid, vGraph) =>
       var pairflow = 0D
       var allpairflow = 0D
@@ -183,10 +199,11 @@ object MaxflowCreditTools {
       for (src <- vGraph.getGraph().keySet.-(dst)) {
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
         val flowtemp = maxflowNotGraphX(vGraph, src, dst)
-        pairflow += flowtemp._3 * (1-src.initScore)
-        allpairflow += flowtemp._3/src.initScore * (1-src.initScore)
+
+        pairflow += flowtemp._3 * (1 - src.initScore)
+        allpairflow += flowtemp._3 / src.initScore * (1 - src.initScore)
       }
-      val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow/allpairflow
+      val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow / allpairflow
       (vid, fusionflow)
     }
   }
@@ -196,15 +213,50 @@ object MaxflowCreditTools {
     * 计算最大流分数
     */
 
-  def run2(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
-    extendPair.map { case (vid, vGraph) =>
+  def run3(maxflowSubExtendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+    maxflowSubExtendPair.map { case (vid, vGraph) =>
+      var pairflow = 0D
+      var allpairflow = 0D
+      var fusionflow = 0D
+      var returnflow = 0D
+
+      var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
+      for (src <- vGraph.getGraph().keySet.-(dst).filter(_.initScore != 0)) {
+
+        //   val vGraph=extendPair.filter(_._1==vid).map(_._2).first()
+
+        //调用最大流算法计算pair节点对内所有节点对其传递值
+        val flowtemp = MaxflowCreditTools.maxflowNotGraphX(vGraph, src, dst)
+
+        pairflow += flowtemp._3 * (1 - src.initScore)
+        allpairflow += flowtemp._3 / src.initScore * (1 - src.initScore)
+      }
+      if (allpairflow != 0) {
+        fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow / allpairflow
+        returnflow = pairflow / allpairflow
+      }
+      else {
+        fusionflow = dst.initScore
+        returnflow = 0D
+      }
+     (vid, returnflow, fusionflow)
+    }
+  }
+
+
+  /**
+    * 计算最大流分数
+    */
+
+  def run2(maxflowSubExtendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+    maxflowSubExtendPair.map { case (vid, vGraph) =>
       var pairflow = 0D
       var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
       for (src <- vGraph.getGraph().keySet.-(dst)) {
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
         val flowtemp = maxflowNotGraphX(vGraph, src, dst)
         //1。    pairflow += flowtemp._3 * (100 - src.initScore * 100) / 100 * src.initScore * 100
-        pairflow += flowtemp._3 * (1-src.initScore)
+        pairflow += flowtemp._3 * (1 - src.initScore)
       }
       val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow
       (vid, fusionflow)
@@ -216,19 +268,18 @@ object MaxflowCreditTools {
     * 计算最大流分数
     */
 
-def run1(extendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
-  extendPair.map { case (vid, vGraph) =>
-    var allflow = 0D
-    var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
-    for (src <- vGraph.getGraph().keySet.-(dst)) {
-      //调用最大流算法计算pair节点n步之内所有节点对其传递值
-      val flowtemp = maxflowNotGraphX(vGraph, src, dst)
-      allflow += flowtemp._3
+  def run1(maxflowSubExtendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double) = {
+    maxflowSubExtendPair.map { case (vid, vGraph) =>
+      var allflow = 0D
+      var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
+      for (src <- vGraph.getGraph().keySet.-(dst)) {
+        //调用最大流算法计算pair节点n步之内所有节点对其传递值
+        val flowtemp = maxflowNotGraphX(vGraph, src, dst)
+        allflow += flowtemp._3
+      }
+      (vid, allflow)
     }
-    (vid, allflow)
   }
-}
-
 
 
   /*

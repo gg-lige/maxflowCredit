@@ -7,79 +7,60 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4d706ed1-ef36-41d6-8610-4d06de49a350" name="Default" comment="最大流算法：&#10;extendSubgraph上各节点存储（id,边集，点集）&#10;run方法需两次collect">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$main$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$10$$anonfun$apply$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22$$anonfun$apply$3$$anonfun$apply$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22$$anonfun$apply$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$5$$anonfun$25.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24$$anonfun$apply$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$27$$anonfun$apply$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$27.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$32.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$37.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49$$anonfun$50.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49$$anonfun$51.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49$$anonfun$apply$14.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$52.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$53.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$3$$anonfun$apply$12.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$3$$anonfun$apply$13.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$4$$anonfun$35.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$3$$anonfun$apply$10.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$3$$anonfun$apply$9.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$5$$anonfun$33.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$8$$anonfun$apply$11.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$2$$anonfun$apply$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1$$anonfun$31.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1$$anonfun$apply$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/artifacts/maxflowCredit_jar2/maxflowCredit.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10$$anonfun$apply$2.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$3.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$18.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$19.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$20.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25$$anonfun$apply$5.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$26.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27$$anonfun$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$29.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$30.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$48.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$51$$anonfun$52.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$51$$anonfun$53.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$51$$anonfun$apply$16.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$54.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$55.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$7.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8$$anonfun$apply$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$3$$anonfun$apply$14.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$3$$anonfun$apply$15.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$4$$anonfun$37.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$3$$anonfun$apply$11.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$3$$anonfun$apply$12.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$5$$anonfun$35.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs4$8$$anonfun$apply$13.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$2$$anonfun$apply$10.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run1$1$$anonfun$33.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run1$1$$anonfun$apply$9.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run2$1$$anonfun$32.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run2$1$$anonfun$apply$8.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run3$1$$anonfun$31.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run3$1$$anonfun$apply$7.class" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/artifacts/maxflowCredit_jar3/maxflowCredit.jar" afterPath="$PROJECT_DIR$/out/artifacts/maxflowCredit_jar3/maxflowCredit.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$10.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$10.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$11.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$11.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$12.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$12.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr$.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/entity/EdgeAttr.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$main$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$$anonfun$main$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main$.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/main/Main.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$13.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$13.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$14.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$14.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$15.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$15.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$16.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$16.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$17.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$17.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$18.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$18.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$19.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$19.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$20.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$20.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$21.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$21.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$22.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$23.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$23.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$24.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$26.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$26.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$28.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$28.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$29.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$29.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$3.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$30.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$30.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$4.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$4.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$5.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$5.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$6.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$6.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$7.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$7.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$8.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$8.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$9.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$9.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$extractNSR$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$extractNSR$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$getPath$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$getPath$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPaths$1$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPaths$1$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPathsReverse$1$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$lg$scala$utils$CreditGraphTools$$sendPathsReverse$1$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$reComputeWeight$2.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$25.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$$anonfun$25.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools$.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/CreditGraphTools.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$2.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$3.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$$anonfun$3.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools$.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/InputOutputTools$.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10$$anonfun$apply$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10$$anonfun$apply$2.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/ExperimentTools.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$10.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$11.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$11.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$12.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$12.class" />
@@ -87,30 +68,19 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$14.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$14.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$15.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$15.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$16.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$16.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$3.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$18.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$18.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$19.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4$$anonfun$19.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17$$anonfun$apply$4.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$17.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$20.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$20.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$21.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$21.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$22.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$22.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$23.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$23.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$24.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$24.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25$$anonfun$apply$5.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25$$anonfun$apply$5.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$25.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$26.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$26.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27$$anonfun$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27$$anonfun$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$27.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$29.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$29.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$30.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6$$anonfun$30.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28$$anonfun$apply$6.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$28.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$3.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$3.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$34.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$34.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$36.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$36.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$38.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$38.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$39.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$39.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$4.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$4.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$40.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$40.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$41.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$41.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$42.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$42.class" />
@@ -119,12 +89,10 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$45.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$45.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$46.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$46.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$47.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$47.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$48.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$48.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$49.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$5.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$5.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$50.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$50.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$51.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$51.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$6.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$6.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$7.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$7.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8$$anonfun$apply$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8$$anonfun$apply$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$8.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$9.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$9.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$bfs$1.class" />
@@ -153,15 +121,20 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflow$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflow$2.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$maxflowNotGraphX$2.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run1$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run1$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run2$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run2$1.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run3$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$run3$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$1.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$1.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$2.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$2.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$3.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$$anonfun$shortestPath$3.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$NodeCompator.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools$NodeCompator.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools.class" afterPath="$PROJECT_DIR$/out/production/maxflowCredit/lg/scala/utils/MaxflowCreditTools.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/main/Main.scala" afterPath="$PROJECT_DIR$/src/lg/scala/main/Main.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" afterPath="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -232,8 +205,8 @@
       <file leaf-file-name="Main.scala" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/lg/scala/main/Main.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="261">
-              <caret line="101" column="25" lean-forward="true" selection-start-line="101" selection-start-column="25" selection-end-line="101" selection-end-column="25" />
+            <state relative-caret-position="569">
+              <caret line="136" column="23" lean-forward="true" selection-start-line="136" selection-start-column="23" selection-end-line="136" selection-end-column="23" />
               <folding>
                 <element signature="e#1127#1154#0" expanded="true" />
               </folding>
@@ -244,19 +217,11 @@
       <file leaf-file-name="MaxflowCreditTools.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="624">
-              <caret line="231" column="0" lean-forward="true" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ExperimentTools.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-14">
-              <caret line="17" column="44" lean-forward="false" selection-start-line="17" selection-start-column="44" selection-end-line="17" selection-end-column="44" />
-              <folding />
+            <state relative-caret-position="341">
+              <caret line="223" column="77" lean-forward="true" selection-start-line="223" selection-start-column="77" selection-end-line="223" selection-end-column="77" />
+              <folding>
+                <element signature="e#25#69#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -264,11 +229,21 @@
       <file leaf-file-name="InputOutputTools.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="40" column="68" lean-forward="false" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="68" />
+            <state relative-caret-position="394">
+              <caret line="225" column="81" lean-forward="false" selection-start-line="225" selection-start-column="39" selection-end-line="225" selection-end-column="81" />
               <folding>
-                <element signature="e#24#51#0" expanded="false" />
+                <element signature="e#24#51#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExperimentTools.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="500">
+              <caret line="25" column="20" lean-forward="false" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -276,30 +251,18 @@
       <file leaf-file-name="CreditGraphTools.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="147" column="9" lean-forward="false" selection-start-line="147" selection-start-column="6" selection-end-line="147" selection-end-column="9" />
-              <folding>
-                <element signature="e#25#100#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EdgeAttr.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+            <state relative-caret-position="225">
+              <caret line="48" column="6" lean-forward="false" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MaxflowVertexAttr.scala" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowVertexAttr.scala">
+      <file leaf-file-name="InitVertexAttr.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="7" column="53" lean-forward="false" selection-start-line="7" selection-start-column="53" selection-end-line="7" selection-end-column="53" />
+            <state relative-caret-position="275">
+              <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -308,8 +271,28 @@
       <file leaf-file-name="InitEdgeAttr.scala" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="19" column="6" lean-forward="false" selection-start-line="19" selection-start-column="6" selection-end-line="19" selection-end-column="6" />
+            <state relative-caret-position="225">
+              <caret line="39" column="85" lean-forward="false" selection-start-line="39" selection-start-column="85" selection-end-line="39" selection-end-column="85" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VertexAttr.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="125">
+              <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EdgeAttr.scala" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="675">
+              <caret line="30" column="3" lean-forward="false" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -326,8 +309,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>flatmap</find>
-      <find>flatma</find>
       <find>subgr</find>
       <find>run</find>
       <find>toSet</find>
@@ -356,6 +337,8 @@
       <find>max</find>
       <find>to</find>
       <find>for</find>
+      <find>exte</find>
+      <find>para</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -392,12 +375,12 @@
         <option value="$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala" />
         <option value="$PROJECT_DIR$/src/lg/java/PoolConnection.java" />
         <option value="$PROJECT_DIR$/src/lg/java/DataBaseManager.java" />
-        <option value="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" />
-        <option value="$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala" />
         <option value="$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala" />
         <option value="$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala" />
-        <option value="$PROJECT_DIR$/src/lg/scala/main/Main.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala" />
         <option value="$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala" />
+        <option value="$PROJECT_DIR$/src/lg/scala/main/Main.scala" />
       </list>
     </option>
   </component>
@@ -429,7 +412,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -499,6 +482,10 @@
               <option name="myItemId" value="scala" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -543,37 +530,11 @@
               <option name="myItemId" value="lg" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="maxflowCredit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="maxflowCredit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lg" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -594,6 +555,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="lg.scala.main" />
       <recent name="lg.java" />
       <recent name="lg.scala.entity" />
     </key>
@@ -1128,7 +1090,10 @@
       <workItem from="1507514362957" duration="65959000" />
       <workItem from="1507857646070" duration="21521000" />
       <workItem from="1507955080432" duration="75000" />
-      <workItem from="1507955467347" duration="12369000" />
+      <workItem from="1507955467347" duration="89367000" />
+      <workItem from="1509018976027" duration="52634000" />
+      <workItem from="1509539391506" duration="7004000" />
+      <workItem from="1509856677682" duration="44552000" />
     </task>
     <task id="LOCAL-00001" summary="最大流算法：&#10;节点串行抽子图，子图内节点串行执行两两对的并行最大流">
       <created>1499779894414</created>
@@ -1162,7 +1127,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="806477000" />
+    <option name="totallyTimeSpent" value="987665000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1174,13 +1139,13 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13510638" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23404256" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Java Enterprise" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12513721" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -1232,13 +1197,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/Download/安装资源/spark-1.5.1/graphx/src/main/scala/org/apache/spark/graphx/lib/ShortestPaths.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="736">
-          <caret line="48" column="98" lean-forward="true" selection-start-line="48" selection-start-column="98" selection-end-line="48" selection-end-column="98" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/scala/collection/Iterator.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="535">
@@ -1326,14 +1284,14 @@
     </entry>
     <entry file="dbSrc:///d51a7f86/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/schema/TAX/view/WWD_GROUNDTRUTH.sql" />
     <entry file="dbDummy://dbtable:/d51a7f86/a7bcef0a-3c86-4e3e-a4e9-3798e4375f4d/TAX.XY_NSR_XYJB">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
           <filtering enabled="true" />
+        </state>
+      </provider>
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1443,20 +1401,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowGraph.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="825">
-          <caret line="48" column="6" lean-forward="false" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lg/java/Parameters.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="275">
@@ -1485,24 +1429,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/Download/安装资源/spark-1.5.1/core/src/main/scala/org/apache/spark/rdd/RDD.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="453">
           <caret line="525" column="6" lean-forward="false" selection-start-line="525" selection-start-column="6" selection-end-line="525" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -1520,70 +1450,110 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="19" column="6" lean-forward="false" selection-start-line="19" selection-start-column="6" selection-end-line="19" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="15" column="7" lean-forward="false" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowVertexAttr.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="7" column="53" lean-forward="false" selection-start-line="7" selection-start-column="53" selection-end-line="7" selection-end-column="53" />
+        <state relative-caret-position="175">
+          <caret line="7" column="6" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowEdgeAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="175">
+          <caret line="7" column="70" lean-forward="false" selection-start-line="7" selection-start-column="70" selection-end-line="7" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/MaxflowGraph.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="325">
+          <caret line="24" column="22" lean-forward="false" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="500">
+          <caret line="25" column="20" lean-forward="false" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="48" column="6" lean-forward="false" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://D:/Download/安装资源/spark-1.5.1-bin-hadoop2.6/lib/spark-assembly-1.5.1-hadoop2.6.0.jar!/org/apache/spark/graphx/Graph.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="3" column="6" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/VertexAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitVertexAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/InitEdgeAttr.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="39" column="85" lean-forward="false" selection-start-line="39" selection-start-column="85" selection-end-line="39" selection-end-column="85" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/InputOutputTools.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="40" column="68" lean-forward="false" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="68" />
+        <state relative-caret-position="394">
+          <caret line="225" column="81" lean-forward="false" selection-start-line="225" selection-start-column="39" selection-end-line="225" selection-end-column="81" />
           <folding>
-            <element signature="e#24#51#0" expanded="false" />
+            <element signature="e#24#51#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/CreditGraphTools.scala">
+    <entry file="file://$PROJECT_DIR$/src/lg/scala/entity/EdgeAttr.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="147" column="9" lean-forward="false" selection-start-line="147" selection-start-column="6" selection-end-line="147" selection-end-column="9" />
-          <folding>
-            <element signature="e#25#100#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/ExperimentTools.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-14">
-          <caret line="17" column="44" lean-forward="false" selection-start-line="17" selection-start-column="44" selection-end-line="17" selection-end-column="44" />
+        <state relative-caret-position="675">
+          <caret line="30" column="3" lean-forward="false" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/lg/scala/utils/MaxflowCreditTools.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="624">
-          <caret line="231" column="0" lean-forward="true" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="341">
+          <caret line="223" column="77" lean-forward="true" selection-start-line="223" selection-start-column="77" selection-end-line="223" selection-end-column="77" />
+          <folding>
+            <element signature="e#25#69#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/lg/scala/main/Main.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="101" column="25" lean-forward="true" selection-start-line="101" selection-start-column="25" selection-end-line="101" selection-end-column="25" />
+        <state relative-caret-position="569">
+          <caret line="136" column="23" lean-forward="true" selection-start-line="136" selection-start-column="23" selection-end-line="136" selection-end-column="23" />
           <folding>
             <element signature="e#1127#1154#0" expanded="true" />
           </folding>
