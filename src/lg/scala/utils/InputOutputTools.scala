@@ -24,6 +24,23 @@ import scala.reflect.ClassTag
   * Created by lg on 2017/6/19.
   */
 object InputOutputTools {
+  val url = Parameters.DataBaseURL
+  val user = Parameters.DataBaseUserName
+  val password = Parameters.DataBaseUserPassword
+  val driver = Parameters.JDBCDriverString
+
+  val properties = new Properties()
+  properties.put("user", user)
+  properties.put("password", password)
+  properties.put("driver", driver)
+
+  val db = Map(
+    "url" -> Parameters.DataBaseURL,
+    "user" -> Parameters.DataBaseUserName,
+    "password" -> Parameters.DataBaseUserPassword,
+    "driver" -> Parameters.JDBCDriverString
+  )
+
   def saveRDDAsFile(sc: SparkContext, objectRdd: RDD[(VertexId, Double)], objectPath: String, textRdd: RDD[(VertexId, Double, Boolean)], textPath: String) = {
     //检查hdfs中是否已经存在
     val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
@@ -230,10 +247,6 @@ object InputOutputTools {
     //将所有点存入hdfs
     ALL_VERTEX.saveAsObjectFile("/lg/maxflowCredit/startVertices")
 
-    val url = Parameters.DataBaseURL
-    val user = Parameters.DataBaseUserName
-    val password = Parameters.DataBaseUserPassword
-    val driver = Parameters.JDBCDriverString
 
     DataBaseManager.execute("truncate table " + "lg_startEdge")
     val schema = StructType(
@@ -247,11 +260,12 @@ object InputOutputTools {
     )
     val rowRDD = ALL_EDGE.filter(e => e.attr.w_invest != 0.0 || e.attr.w_legal != 0.0 || e.attr.w_stockholder != 0.0).map(p => Row(p.srcId, p.dstId, p.attr.w_legal, p.attr.w_invest, p.attr.w_stockholder)).distinct()
     val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema)
-    val prop = new Properties()
-    prop.put("user", "tax")
-    prop.put("password", "taxgm2016")
-    prop.put("driver", "oracle.jdbc.driver.OracleDriver")
-    JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", prop)
+    JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", properties)
+    /*   val prop = new Properties()
+       prop.put("user", "tax")
+       prop.put("password", "taxgm2016")
+       prop.put("driver", "oracle.jdbc.driver.OracleDriver")
+       JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", prop)*/
 
   }
 
@@ -259,12 +273,7 @@ object InputOutputTools {
     * 从数据库中读取构建初始图的点和边
     */
   def getFromOracle2(sqlContext: HiveContext, sc: SparkContext): Graph[InitVertexAttr, InitEdgeAttr] = {
-    val db = Map(
-      "url" -> Parameters.DataBaseURL,
-      "user" -> Parameters.DataBaseUserName,
-      "password" -> Parameters.DataBaseUserPassword,
-      "driver" -> Parameters.JDBCDriverString
-    )
+
 
     import sqlContext.implicits._
     val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_FR2"))).load()
@@ -277,7 +286,7 @@ object InputOutputTools {
     val fr = FR_DF.select("SRC", "DST", "W_LEGAL").
       rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
       .reduceByKey((a, b) => {
-        val f_positive = a * b    //正向融合因子
+        val f_positive = a * b //正向融合因子
         val f_inverse = (1 - a) * (1 - b)
         f_positive / (f_positive + f_inverse)
       }).map { case row =>
@@ -374,37 +383,41 @@ object InputOutputTools {
     return G
   }
 
-/*
-  def saveMaxflowResultToOracle(finalScore:Graph[(Int,Int,Boolean), Double],sqlContext:SQLContext,
-    edge_dst:String="WWD_XYCD_EDGE_FINAL",vertex_dst:String="WWD_XYCD_VERTEX_FINAL",bypass:Boolean=false): Unit = {
-      if(!bypass){
+
+  def saveMaxflowResultToOracle(outputV: RDD[(String, String, Long, Double, Double)],
+                                outputE: RDD[(String, String, String, String)],
+                                sqlContext: SQLContext,
+                                vertex_dst: String = "LG_MAXFLOW_VERTEX", edge_dst: String = "LG_MAXFLOW_EDGE"): Unit = {
+    DataBaseManager.execute("truncate table " + vertex_dst)
+    val schemaV = StructType(
+      List(
+        StructField("COMPANY", StringType, true),
+        StructField("VERTICE", StringType, true),
+        StructField("V", LongType, true),
+        StructField("INITSCORE", LongType, true),
+        StructField("FINALSCORE", DoubleType, true),
+        StructField("INFLUENCE", DoubleType, true)
+      )
+    )
+    val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5)).distinct()
+    val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schemaV).repartition(3)
+    JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
+
         DataBaseManager.execute("truncate table " + edge_dst)
-        val schema = StructType(
+        val schemaE = StructType(
           List(
-            StructField("source", LongType, true),
-            StructField("target", LongType, true),
-            StructField("FINAL_INFLUENCE", DoubleType, true)
+            StructField("COMPANY", StringType, true),
+            StructField("SOURCE", StringType, true),
+            StructField("TARGET", StringType, true),
+            StructField("DIRECTINFLUENCE", StringType, true)
           )
         )
-        val rowRDD = finalScore.edges.map(e=> Row(e.srcId,e.dstId,e.attr)).distinct()
+        val rowRDD = outputE.map(e => Row(e._1, e._2, e._3, e._4)).distinct()
 
-        val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema).repartition(3)
+        val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schemaE).repartition(3)
         JdbcUtils.saveTable(edgeDataFrame, url, edge_dst, properties)
-      }
 
-      DataBaseManager.execute("truncate table " + vertex_dst)
-      val schema1 = StructType(
-        List(
-          StructField("VERTICE", LongType, true),
-          StructField("INITSCORE", IntegerType, true),
-          StructField("FINALSCORE", IntegerType, true)
-        )
-      )
-      val rowRDD1 = finalScore.vertices.map(p => Row(p._1,p._2._1,p._2._2)).distinct()
-      val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schema1).repartition(3)
-      JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
-    }
-*/
+  }
 
 
 }
