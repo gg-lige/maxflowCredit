@@ -73,6 +73,7 @@ object Main {
         toReturn
       }.filter(e => e._1._1 != e._1._2).map(e => Edge(e._1._1, e._1._2, e._2))
       val tpin = Graph(tpin0.vertices, tpin0E)
+      tpin.edges.filter(_._1 == 283705).collect()
       //修正图上的边权值,并提取点度>0的节点（信息融合等原理）,
       val fixEdgeWeightGraph = MaxflowCreditTools.fixEdgeWeight(tpin).persist()
       println("\n修正边权值fixEdgeWeightGraph:  \n节点数：" + fixEdgeWeightGraph.vertices.count)
@@ -94,7 +95,7 @@ object Main {
 
     //取子图，只选择节点有纳税信用评分的节点
     if (selectHaveInitCreditScore) {
-      val selectGraph0 = fixEdgeWeightGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D)
+      val selectGraph0 = selectGraph.subgraph(vpred = (vid, vattr) => vattr._1 > 0D)
       val degreeGra = selectGraph0.degrees
       selectGraph = Graph(selectGraph0.vertices.join(degreeGra).map(v => (v._1, v._2._1)), selectGraph0.edges)
     }
@@ -155,10 +156,8 @@ object Main {
         }
         //验证方式三：输出至数据库，由税务系统可视化验证
         else if (outputVerifyMode == 3) {
-          val outputV = maxflowCredit.flatMap(v1=>v1._4.map(v2=>(v2._1,(v1._1,v2._2,v2._3)))).join(maxflowCredit.map(x=>(x._1,x._3))).map(x=>(x._2._1._1.toString,x._1.toString,x._2._1._2,x._2._2,x._2._1._3))
-          //sc.parallelize(maxflowCredit._2.toList).map(x => (x._2, (x._1, x._3, x._4))).join(maxflowCredit._1.map(x => (x._1, x._3))).map(x => (x._2._1._1.toString, x._1.toString, x._2._1._2, x._2._2, x._2._1._3))
-          //     val v=maxflowSubExtendPair.flatMap(v1=>v1._2.getAllEdge().map(v2=>(v1._1,List(v2.src.id,v2.dst.id)))).reduceByKey(_.++(_)).map(x=>(x._1,x._2.distinct))
-          val outputE = maxflowSubExtendPair.flatMap(e1 => e1._2.getAllEdge().map(e2 => (e1._1.toString, e2.src.id.toString, e2.dst.id.toString, e2.weight.toString)))
+          val outputV = maxflowCredit.flatMap(v1 => v1._4.map(v2 => (v2._1, (v1._1, v2._2, v2._3)))).leftOuterJoin(maxflowCredit.map(x => (x._1, x._3))).map(x => (x._2._1._1.toString, x._1.toString, x._2._1._2, x._2._2.getOrElse(0D), x._2._1._3))
+          val outputE = maxflowSubExtendPair.flatMap(e1 => e1._2.getAllEdge().map(e2 => ((e2.src.id, e2.dst.id), e1._1))).leftOuterJoin(fixEdgeWeightGraph.edges.map(e => ((e.srcId, e.dstId), e.attr))).map(e => (e._2._1.toString, e._1._1.toString, e._1._2.toString, e._2._2.getOrElse(0D).toString))
           InputOutputTools.saveMaxflowResultToOracle(outputV, outputE, hiveContext)
         }
 
