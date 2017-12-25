@@ -10,11 +10,11 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId}
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Row, SQLContext}
-import org.apache.spark.sql.execution.datasources.jdbc.JdbcUtils
+import org.apache.spark.sql.execution.datasources.jdbc.{JDBCOptions, JdbcUtils}
 import org.apache.spark.sql.functions.max
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types._
+import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.storage.StorageLevel
 
 import scala.reflect.ClassTag
@@ -41,9 +41,10 @@ object InputOutputTools {
     "driver" -> Parameters.JDBCDriverString
   )
 
+
   def saveRDDAsFile(sc: SparkContext, objectRdd: RDD[(VertexId, Double)], objectPath: String, textRdd: RDD[(VertexId, Double, Boolean)], textPath: String) = {
     //检查hdfs中是否已经存在
-    val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
+    val hdfs = FileSystem.get(new URI("hdfs://cluster1:8020"), sc.hadoopConfiguration)
     try {
       hdfs.delete(new Path(objectPath), true)
       hdfs.delete(new Path(textPath), true)
@@ -61,7 +62,7 @@ object InputOutputTools {
 
   def save3RDDAsObjectFile[AD: ClassTag, BD: ClassTag, CD: ClassTag](RDDPair: RDD[(AD, BD, CD)], sc: SparkContext, path: String) = {
     //检查hdfs中是否已经存在
-    val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
+    val hdfs = FileSystem.get(new URI("hdfs://cluster1:8020"), sc.hadoopConfiguration)
     try {
       hdfs.delete(new Path(path), true)
     } catch {
@@ -84,7 +85,7 @@ object InputOutputTools {
     */
   def saveAsObjectFile[VD, ED](graph: Graph[VD, ED], sc: SparkContext, pathV: String, pathE: String): Unit = {
     //检查hdfs中是否已经存在
-    val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
+    val hdfs = FileSystem.get(new URI("hdfs://cluster1:8020"), sc.hadoopConfiguration)
     try {
       hdfs.delete(new Path(pathV), true)
       hdfs.delete(new Path(pathE), true)
@@ -99,12 +100,6 @@ object InputOutputTools {
     * 从数据库中读取构建初始图的点和边(即将用j够的新数据)
     */
   def getFromOracle(hiveContext: HiveContext): Graph[InitVertexAttr, InitEdgeAttr] = {
-    val db = Map(
-      "url" -> Parameters.DataBaseURL,
-      "user" -> Parameters.DataBaseUserName,
-      "password" -> Parameters.DataBaseUserPassword,
-      "driver" -> Parameters.JDBCDriverString
-    )
     //注册成表
     // import hiveContext.implicits._
     val V_DF = hiveContext.read.format("jdbc").options(db + (("dbtable", "jjj_vertex"))).load()
@@ -130,13 +125,7 @@ object InputOutputTools {
   /**
     * 从数据库中读取构建初始图的点和边,重新编完号后投资、法人、股东边存入数据库添加反向影响，点存入HDFS
     */
-  def saveE2Oracle_V2HDFS(sqlContext: HiveContext) = {
-    val db = Map(
-      "url" -> Parameters.DataBaseURL,
-      "user" -> Parameters.DataBaseUserName,
-      "password" -> Parameters.DataBaseUserPassword,
-      "driver" -> Parameters.JDBCDriverString
-    )
+  def saveE2Oracle_V2HDFS(sqlContext: SparkSession) = {
 
     import sqlContext.implicits._
     val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_NSR_FDDBR"))).load()
@@ -187,6 +176,7 @@ object InputOutputTools {
       }.persist(StorageLevel.MEMORY_AND_DISK)
 
     //计算边表
+    //投资方为纳税人（表示为投资方证件号码对应法人表证件号码所对应的公司）的投资关系
     val tz_cc = TZ_NSR_DF.
       join(FR_DF, $"TZ_ZJHM" === $"ZJHM").
       select("VERTEXID", "BTZ_VERTEXID", "TZBL").
@@ -202,6 +192,8 @@ object InputOutputTools {
       val eattr = InitEdgeAttr(0.0, 0.0, row.getAs[BigDecimal](2).doubleValue(), 0.0)
       ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), eattr)
     }
+
+    //投资方为非纳税人的投资关系
     val tz_pc_cc = TZ_DF.
       selectExpr("ZJHM", "VERTEXID", "TZBL").
       except(TZ_NSR_DF.join(FR_DF, $"TZ_ZJHM" === $"ZJHM").select("TZ_ZJHM", "BTZ_VERTEXID", "TZBL")).
@@ -245,7 +237,7 @@ object InputOutputTools {
       persist(StorageLevel.MEMORY_AND_DISK)
 
     //将所有点存入hdfs
-    ALL_VERTEX.saveAsObjectFile("/lg/maxflowCredit/startVertices")
+    ALL_VERTEX.saveAsObjectFile("/user/lg/maxflowCredit/startVertices")
 
 
     DataBaseManager.execute("truncate table " + "lg_startEdge")
@@ -258,24 +250,19 @@ object InputOutputTools {
         StructField("W_STOCKHOLDER", DoubleType, true)
       )
     )
+
     val rowRDD = ALL_EDGE.filter(e => e.attr.w_invest != 0.0 || e.attr.w_legal != 0.0 || e.attr.w_stockholder != 0.0).map(p => Row(p.srcId, p.dstId, p.attr.w_legal, p.attr.w_invest, p.attr.w_stockholder)).distinct()
     val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema)
-    JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", properties)
-    /*   val prop = new Properties()
-       prop.put("user", "tax")
-       prop.put("password", "taxgm2016")
-       prop.put("driver", "oracle.jdbc.driver.OracleDriver")
-       JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", prop)*/
 
+    val options = new JDBCOptions(db+("dbtable" -> "lg_startEdge"))
+    JdbcUtils.saveTable(edgeDataFrame, Option(schema), false, options)
+    // JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", properties)
   }
 
   /**
     * 从数据库中读取构建初始图的点和边
     */
-  def getFromOracle2(sqlContext: HiveContext, sc: SparkContext): Graph[InitVertexAttr, InitEdgeAttr] = {
-
-
-    import sqlContext.implicits._
+  def getFromOracle2(sqlContext: SparkSession, sc: SparkContext): Graph[InitVertexAttr, InitEdgeAttr] = {
     val FR_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_FR2"))).load()
     val TZ_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_TZ2"))).load()
     val GD_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.LG_GD2"))).load()
@@ -345,12 +332,12 @@ object InputOutputTools {
     }
 
     // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环
-    val ALL_EDGE = fr.union(tz).union(gd).union(jy).
+    val ALL_EDGE = fr.union(tz).union(gd).union(jy.filter(_._2.w_trade>0.01)).
       reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
       map(edge => Edge(edge._1._1, edge._1._2, edge._2)).
       persist(StorageLevel.MEMORY_AND_DISK)
 
-    val ALL_VERTEX = sc.objectFile[(Long, InitVertexAttr)]("/lg/maxflowCredit/startVertices").repartition(128)
+    val ALL_VERTEX = sc.objectFile[(Long, InitVertexAttr)]("/user/lg/maxflowCredit/startVertices").repartition(128)
     val degrees = Graph(ALL_VERTEX, ALL_EDGE).degrees.persist
     // 使用度大于0的顶点和边构建图
     Graph(ALL_VERTEX.join(degrees).map(vertex => (vertex._1, vertex._2._1)), ALL_EDGE).persist()
@@ -361,7 +348,7 @@ object InputOutputTools {
     * 判断hdfs中是否存在
     */
   def Exist(sc: SparkContext, path: String) = {
-    val hdfs = FileSystem.get(new URI("hdfs://cloud-03:9000"), sc.hadoopConfiguration)
+    val hdfs = FileSystem.get(new URI("hdfs://cluster1:8020"), sc.hadoopConfiguration)
     hdfs.exists(new Path(path))
   }
 
@@ -386,7 +373,7 @@ object InputOutputTools {
 
   def saveMaxflowResultToOracle(outputV: RDD[(String, String, Long, Double, Double)],
                                 outputE: RDD[(String, String, String, String)],
-                                sqlContext: SQLContext,
+                                sqlContext: SparkSession,
                                 vertex_dst: String = "LG_MAXFLOW_VERTEX", edge_dst: String = "LG_MAXFLOW_EDGE"): Unit = {
     DataBaseManager.execute("truncate table " + vertex_dst)
     val schemaV = StructType(
@@ -401,21 +388,24 @@ object InputOutputTools {
     )
     val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5)).distinct()
     val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schemaV).repartition(3)
-    JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
+    //  JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
+    val optionsV = new JDBCOptions(db+("dbtable" -> vertex_dst))
+    JdbcUtils.saveTable(vertexDataFrame, Option(schemaV), false, optionsV)
+    DataBaseManager.execute("truncate table " + edge_dst)
+    val schemaE = StructType(
+      List(
+        StructField("COMPANY", StringType, true),
+        StructField("SOURCE", StringType, true),
+        StructField("TARGET", StringType, true),
+        StructField("DIRECTINFLUENCE", StringType, true)
+      )
+    )
+    val rowRDD = outputE.map(e => Row(e._1, e._2, e._3, e._4)).distinct()
 
-        DataBaseManager.execute("truncate table " + edge_dst)
-        val schemaE = StructType(
-          List(
-            StructField("COMPANY", StringType, true),
-            StructField("SOURCE", StringType, true),
-            StructField("TARGET", StringType, true),
-            StructField("DIRECTINFLUENCE", StringType, true)
-          )
-        )
-        val rowRDD = outputE.map(e => Row(e._1, e._2, e._3, e._4)).distinct()
-
-        val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schemaE).repartition(3)
-        JdbcUtils.saveTable(edgeDataFrame, url, edge_dst, properties)
+    val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schemaE).repartition(3)
+    //   JdbcUtils.saveTable(edgeDataFrame, url, edge_dst, properties)
+    val optionsE = new JDBCOptions(db+("dbtable" -> edge_dst))
+    JdbcUtils.saveTable(edgeDataFrame, Option(schemaE), false, optionsE)
 
   }
 

@@ -16,7 +16,7 @@ class InitEdgeAttr(var w_legal: Double, var w_invest: Double, var w_stockholder:
   override def toString = s"InitEdgeAttr(法人:$w_legal, 投资:$w_invest, 股东:$w_stockholder, 交易:$w_trade)"
 
 
-  //前件路径
+  //前件路径（除了交易的其他关系组成的路径），无论正反向路径
   def isAntecedent(weight: Double, justGD: Boolean = false): Boolean = {
     if (this.is_Cohesion)
       return false
@@ -52,6 +52,8 @@ object InitEdgeAttr {
   def combine(a: InitEdgeAttr, b: InitEdgeAttr) = {
     val toReturn = new InitEdgeAttr(a.w_legal + b.w_legal, a.w_invest + b.w_invest, a.w_stockholder + b.w_stockholder, a.w_trade + b.w_trade)
     toReturn.trade_je = a.trade_je + b.trade_je
+    toReturn.w_cohesion=a.w_cohesion+b.w_cohesion
+    toReturn.is_Cohesion=a.is_Cohesion||b.is_Cohesion
     toReturn
   }
 }

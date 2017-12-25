@@ -36,14 +36,14 @@ object ExperimentTools {
     (B.repartition(1), sc.parallelize(result.toSeq))
   }
 
-  def verify2(sc: SparkContext, maxflowCredit: RDD[(VertexId, Double)], selectGraph: RDD[(Long, (Double, Boolean))]) = {
+  def verify2(sc: SparkContext, maxflowCredit: RDD[(VertexId, Double)], maxflowSubGraph: RDD[(Long, (Double, Boolean))]) = {
     /**
       * B为最大流计算排名，A为原始纳税信用等级排名;前100、前200、前300、…中标志为true
       */
-    val A = selectGraph.map(v => (v._2._1, (v._2._2, v._1))).repartition(1).sortByKey(true).map(v => (v._2._2, v._1, v._2._1))
-    val B = maxflowCredit.join(selectGraph).map(x => (x._2._1, (x._1, x._2._2._2))).repartition(1).sortByKey(true).map(x => (x._2._1, x._1, x._2._2))
+    val A = maxflowSubGraph.map(v => (v._2._1, (v._2._2, v._1))).repartition(1).sortByKey(true).map(v => (v._2._2, v._1, v._2._1))
+    val B = maxflowCredit.join(maxflowSubGraph).map(x => (x._2._1, (x._1, x._2._2._2))).repartition(1).sortByKey(true).map(x => (x._2._1, x._1, x._2._2))
     //按100名波动清况
-    var i = 100
+    var i = 10
     var result = HashMap[VertexId, (Double, Double)]() //节点id,最大流命中率，原始命中率
     var number = A.count()
     if (number > 10000) {
@@ -54,7 +54,7 @@ object ExperimentTools {
       val PB = B.take(i).filter(_._3 == true).size / i.toDouble
       val PA = A.take(i).filter(_._3 == true).size / i.toDouble
       result.put(i, (PB.%(3), PA.%(3)))
-      i += 100
+      i += 10
     }
 
     (B.repartition(1), sc.parallelize(result.toSeq))

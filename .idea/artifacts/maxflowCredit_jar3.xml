@@ -2,7 +2,11 @@
   <artifact type="jar" name="maxflowCredit:jar3">
     <output-path>$PROJECT_DIR$/out/artifacts/maxflowCredit_jar3</output-path>
     <root id="archive" name="maxflowCredit.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="maxflowCredit" />
+      <element id="extracted-dir" path="D:/Download/java jar包/ojdbc8.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
