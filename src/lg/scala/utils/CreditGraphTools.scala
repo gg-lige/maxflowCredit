@@ -49,8 +49,8 @@ object CreditGraphTools {
     * 抽取出仅含公司的tpin大图
     */
   def extractNSR(graph: Graph[InitVertexAttr, InitEdgeAttr]): Graph[VertexAttr, EdgeAttr] = {
-    val cohesionDifference = graph.edges.map(x => (x.attr.w_cohesion)).max - graph.edges.map(x => (x.attr.w_cohesion)).min
-    val g=graph.subgraph(vpred = (vid, vattr) => vattr.isNSR == true)
+    //   val cohesionDifference = graph.edges.map(x => (x.attr.w_cohesion)).max - graph.edges.map(x => (x.attr.w_cohesion)).min
+    val g = graph.subgraph(vpred = (vid, vattr) => vattr.isNSR == true)
       .mapVertices { (vid, vattr) =>
         val newVattr = VertexAttr(vattr.sbh, vattr.name)
         newVattr.xydj = vattr.xydj
@@ -72,12 +72,12 @@ object CreditGraphTools {
           newEattr.w_trade = 1.0
         else
           newEattr.w_trade = edge.attr.w_trade
-        newEattr.w_cohesion = edge.attr.w_cohesion / cohesionDifference
+        newEattr.w_cohesion = edge.attr.w_cohesion //  /cohesionDifference
         newEattr
       }
     //过滤掉边上无权值的
-    val filter_E=g.edges.filter(edge=>edge.attr.w_cohesion!=0.0||edge.attr.w_invest!=0.0||edge.attr.w_stockholder!=0.0||edge.attr.w_trade!=0.0)
-    val filterGraph=Graph(g.vertices,filter_E)
+    val filter_E = g.edges.filter(edge => edge.attr.w_cohesion != 0.0 || edge.attr.w_invest != 0.0 || edge.attr.w_stockholder != 0.0 || edge.attr.w_trade != 0.0)
+    val filterGraph = Graph(g.vertices, filter_E)
     val vertexDegree = filterGraph.degrees.persist()
     Graph(filterGraph.vertices.join(vertexDegree).map(v => (v._1, v._2._1)), filterGraph.edges)
 
@@ -114,7 +114,8 @@ object CreditGraphTools {
       case (vid, (vattr, newattr)) => newattr > 0
     }) //选择度大于0的构图
       .mapVertices { case (vid, (list, degree)) => list } // 点属性均为 Paths,此时还没有路径，均为空
-      .mapEdges(edge => Seq(edge.attr.w_legal, edge.attr.w_invest, edge.attr.w_stockholder).max) //边上属性为 （法人、投资、股东） 关系最大值
+ //1.     .mapEdges(edge => Seq(edge.attr.w_legal, edge.attr.w_invest, edge.attr.w_stockholder).max) //边上属性为 （法人、投资、股东） 关系最大值
+      .mapEdges(edge => Seq(edge.attr.w_legal, edge.attr.w_invest, edge.attr.w_stockholder).min) //边上属性为 （法人、投资、股东） 关系最大值
       .cache()
     /*
         preprocessGraph.vertices.filter(_._1==1).first()._2.size
@@ -168,7 +169,9 @@ object CreditGraphTools {
           var weight = 0D
           if (intersect.size >= degree) {
             for (key <- intersect)
-              weight += map1.get(key).get.min(map2.get(key).get) //当A到B之间有多条路径时，选择权值为较少者         ？？
+            //   weight += map1.get(key).get.min(map2.get(key).get) //当A到B之间有多条路径时，选择权值为较少者         ？？
+        //2.      weight = map1.get(key).get.max(map2.get(key).get) //当A到B之间有多条路径时，选择权值为较大者
+              weight = map1.get(key).get.min(map2.get(key).get) //当A到B之间有多条路径时，选择权值为较大者
           }
           if (weight > 0)
             Option(Iterable(((vid1, vid2), weight), ((vid2, vid1), weight))) //Option是一个数据。Option[A] 是一个类型为 A 的可选值的容器： 如果值存在， Option[A] 就是一个 Some[A] ，如果不存在， Option[A] 就是对象 None
@@ -204,9 +207,9 @@ object CreditGraphTools {
           else if (listMap(l._1) > l._2)
             listMap.update(l._1, l._2)
         }
-        (vid, listMap.toSeq)    //处理平行路径，留下权值较小的那条
-    }.filter(_._2.size > 0) //留下有链的
-      .join(tpinFromObject.vertices.filter(_._2.isNSR == true)).map(x => (x._1, x._2._1)) //留下节点为公司的，去除（人-公司-人） 类型
+        (vid, listMap.toSeq) //处理平行路径，留下权值较小的那条
+    }.filter(_._2.size > 0). //留下有链的
+      join(tpinFromObject.vertices.filter(_._2.isNSR == true)).map(x => (x._1, x._2._1)) //留下节点为公司的，去除（人-公司-人） 类型
 
     //重要，转移消息 首先人A控制B、C公司，将B、C得到的控制链消息转移到A上（即在非纳税人上存储其控制的公司链表及其权值）
     val moveMessageOfControls = messageOfControls.flatMap {
@@ -214,17 +217,19 @@ object CreditGraphTools {
     }.groupByKey().map { case (vid, iterab) => (vid, iterab.toSeq) }
 
     //添加新的亲密度关系边（list 为）
-    val newCohesionEdges = moveMessageOfControls.flatMap { case (vid, list) => CreditGraphTools.reComputeWeight(list, degree) }.distinct.map { case ((src, dst), weight) =>
+    val newCohesionEdges = moveMessageOfControls.flatMap { case (vid, list) => CreditGraphTools.reComputeWeight(list, degree) }.distinct.
+//3.      reduceByKey(_.max(_)).//再次筛选为较大亲密度关系的
+      reduceByKey(_.min(_)).//再次筛选为较大亲密度关系的
+      map { case ((src, dst), weight) =>
       val edgeAttr = InitEdgeAttr()
       edgeAttr.is_Cohesion = true
       edgeAttr.w_cohesion = weight
       Edge(src, dst, edgeAttr)
     }
 
-    val newEdge=tpinFromObject.edges.union(newCohesionEdges).map(e => ((e.srcId, e.dstId), e.attr)).reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2)
+    val newEdge = tpinFromObject.edges.union(newCohesionEdges).map(e => ((e.srcId, e.dstId), e.attr)).reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2)
       .map(e => Edge(e._1._1, e._1._2, e._2))
     Graph(tpinFromObject.vertices, newEdge)
-
   }
 
 

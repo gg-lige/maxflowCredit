@@ -26,7 +26,6 @@ class MaxflowGraph() extends Serializable {
     map.flatMap(_._2).toList.distinct
   }
 
-
   private def addToMap(node: MaxflowVertexAttr, edge: MaxflowEdgeAttr) {
 
     if (map.contains(node)) {

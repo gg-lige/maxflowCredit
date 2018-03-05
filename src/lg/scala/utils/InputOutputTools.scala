@@ -9,14 +9,19 @@ import lg.scala.entity.{InitEdgeAttr, InitVertexAttr, MaxflowGraph, MaxflowVerte
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId}
+import org.apache.spark.ml.classification.LinearSVC
+import org.apache.spark.ml.feature.{LabeledPoint, VectorAssembler}
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.execution.datasources.jdbc.{JDBCOptions, JdbcUtils}
 import org.apache.spark.sql.functions.max
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.types._
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.apache.spark.storage.StorageLevel
 
+import scala.collection.mutable.HashMap
 import scala.reflect.ClassTag
 
 
@@ -240,7 +245,7 @@ object InputOutputTools {
     ALL_VERTEX.saveAsObjectFile("/user/lg/maxflowCredit/startVertices")
 
 
-    DataBaseManager.execute("truncate table " + "lg_startEdge")
+    DataBaseManager.execute("truncate table " + "lg_startEdge") //注意词表不是很准确，因为集群崩时重跑，hdfs 上的是准确的
     val schema = StructType(
       List(
         StructField("SRC", LongType, true),
@@ -254,7 +259,7 @@ object InputOutputTools {
     val rowRDD = ALL_EDGE.filter(e => e.attr.w_invest != 0.0 || e.attr.w_legal != 0.0 || e.attr.w_stockholder != 0.0).map(p => Row(p.srcId, p.dstId, p.attr.w_legal, p.attr.w_invest, p.attr.w_stockholder)).distinct()
     val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schema)
 
-    val options = new JDBCOptions(db+("dbtable" -> "lg_startEdge"))
+    val options = new JDBCOptions(db + ("dbtable" -> "lg_startEdge"))
     JdbcUtils.saveTable(edgeDataFrame, Option(schema), false, options)
     // JdbcUtils.saveTable(edgeDataFrame, url, "lg_startEdge", properties)
   }
@@ -331,8 +336,8 @@ object InputOutputTools {
       ((row.getAs[BigDecimal]("xf_VERTEXID").longValue(), row.getAs[BigDecimal]("gf_VERTEXID").longValue()), eattr)
     }
 
-    // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环
-    val ALL_EDGE = fr.union(tz).union(gd).union(jy.filter(_._2.w_trade>0.01)).
+    // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环,交易边选择此为避免出现<0的边
+    val ALL_EDGE = fr.union(tz).union(gd).union(jy.filter(x => x._2.w_trade > 0.01)).
       reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
       map(edge => Edge(edge._1._1, edge._1._2, edge._2)).
       persist(StorageLevel.MEMORY_AND_DISK)
@@ -340,7 +345,7 @@ object InputOutputTools {
     val ALL_VERTEX = sc.objectFile[(Long, InitVertexAttr)]("/user/lg/maxflowCredit/startVertices").repartition(128)
     val degrees = Graph(ALL_VERTEX, ALL_EDGE).degrees.persist
     // 使用度大于0的顶点和边构建图
-    Graph(ALL_VERTEX.join(degrees).map(vertex => (vertex._1, vertex._2._1)), ALL_EDGE).persist()
+    Graph(ALL_VERTEX.join(degrees).map(vertex => (vertex._1, vertex._2._1)), ALL_EDGE).subgraph(vpred = (vid, vattr) => vattr.xyfz >= 0).persist()
 
   }
 
@@ -371,7 +376,7 @@ object InputOutputTools {
   }
 
 
-  def saveMaxflowResultToOracle(outputV: RDD[(String, String, Long, Double, Double)],
+  def saveMaxflowResultToOracle(outputV: RDD[(String, String, Long, Double, Double, Double)],
                                 outputE: RDD[(String, String, String, String)],
                                 sqlContext: SparkSession,
                                 vertex_dst: String = "LG_MAXFLOW_VERTEX", edge_dst: String = "LG_MAXFLOW_EDGE"): Unit = {
@@ -383,13 +388,14 @@ object InputOutputTools {
         StructField("V", LongType, true),
         StructField("INITSCORE", LongType, true),
         StructField("FINALSCORE", DoubleType, true),
-        StructField("INFLUENCE", DoubleType, true)
+        StructField("INFLUENCE", DoubleType, true),
+        StructField("RATIO", DoubleType, true)
       )
     )
-    val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5)).distinct()
+    val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5, p._6)).distinct()
     val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schemaV).repartition(3)
     //  JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
-    val optionsV = new JDBCOptions(db+("dbtable" -> vertex_dst))
+    val optionsV = new JDBCOptions(db + ("dbtable" -> vertex_dst))
     JdbcUtils.saveTable(vertexDataFrame, Option(schemaV), false, optionsV)
     DataBaseManager.execute("truncate table " + edge_dst)
     val schemaE = StructType(
@@ -404,10 +410,52 @@ object InputOutputTools {
 
     val edgeDataFrame = sqlContext.createDataFrame(rowRDD, schemaE).repartition(3)
     //   JdbcUtils.saveTable(edgeDataFrame, url, edge_dst, properties)
-    val optionsE = new JDBCOptions(db+("dbtable" -> edge_dst))
+    val optionsE = new JDBCOptions(db + ("dbtable" -> edge_dst))
     JdbcUtils.saveTable(edgeDataFrame, Option(schemaE), false, optionsE)
-
   }
 
+  def getFeatures(spark: SparkSession): (DataFrame, DataFrame) = {
+    import spark.implicits._
+    val FEATURES_DF_2014 = spark.read.format("jdbc").options(db + (("dbtable" -> "tax.lg_features_2014_final"))).load()
+    val FEATURES_DF_2015 = spark.read.format("jdbc").options(db + (("dbtable" -> "tax.lg_features_2015_final"))).load()
+    (FEATURES_DF_2014,FEATURES_DF_2015)
+  }
+
+
+
+
+
+  /*
+  //三大报表数据处理转轴处理
+  def handleThreeReports(sqlContext: SparkSession) = {
+    import sqlContext.implicits._
+    val ZCFZB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.lg_zcfzb"))).load()
+    val LRB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.lg_lrb"))).load()
+    val XJLLB_DF = sqlContext.read.format("jdbc").options(db + (("dbtable" -> "tax.lg_xjllb"))).load()
+
+    val threeBB_2014 = tranferFeatures(ZCFZB_DF, 66, 2014).union(tranferFeatures(LRB_DF, 20, 2014)).reduceByKey((a, b) => if (a.length > b.length) a ++ b else b ++ a).union(tranferFeatures(XJLLB_DF, 20, 2014)).reduceByKey((a, b) => if (a.length > b.length) a ++ b else b ++ a)
+    val threeBB_2015 = tranferFeatures(ZCFZB_DF, 66, 2015).union(tranferFeatures(LRB_DF, 20, 2015)).reduceByKey((a, b) => if (a.length > b.length) a ++ b else b ++ a).union(tranferFeatures(XJLLB_DF, 20, 2015)).reduceByKey((a, b) => if (a.length > b.length) a ++ b else b ++ a)
+  }
+  def tranferFeatures(df: DataFrame, num: Int, year: Int) = {
+    df.rdd.map(row => (row.getAs[BigDecimal](0).longValue(), row.getAs[String](1).toInt, row.getAs[BigDecimal](2).doubleValue(), row.getAs[BigDecimal](3).doubleValue(), row.getAs[BigDecimal](4).intValue())).filter(_._5 == year).
+      map(x => (x._1, (x._2, x._3, x._4))).groupByKey().map { x =>
+      val bn = new HashMap[Int, Double] //本年金额
+    val sn = new HashMap[Int, Double] //上年金额
+      for (je <- x._2) {
+        bn.put(je._1, je._2)
+        sn.put(je._1, je._3)
+      }
+      for (i <- 1 to num) {
+        if (!bn.contains(i)) {
+          bn.put(i, 0)
+        }
+        if (!sn.contains(i)) {
+          sn.put(i, 0)
+        }
+      }
+      (x._1, (bn.toSeq.sorted ++ sn.toSeq.sorted).map(_._2))
+    }
+  }
+*/
 
 }

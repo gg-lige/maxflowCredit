@@ -1,8 +1,13 @@
 package lg.scala.utils
 
+import java.io.PrintWriter
+
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Graph, VertexId}
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
+import org.apache.spark.mllib.evaluation.binary.BinaryConfusionMatrixImpl
 import org.apache.spark.rdd.RDD
+import org.apache.spark.mllib.evaluation.MulticlassMetrics
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
@@ -43,7 +48,7 @@ object ExperimentTools {
     val A = maxflowSubGraph.map(v => (v._2._1, (v._2._2, v._1))).repartition(1).sortByKey(true).map(v => (v._2._2, v._1, v._2._1))
     val B = maxflowCredit.join(maxflowSubGraph).map(x => (x._2._1, (x._1, x._2._2._2))).repartition(1).sortByKey(true).map(x => (x._2._1, x._1, x._2._2))
     //按100名波动清况
-    var i = 10
+    var i = 100
     var result = HashMap[VertexId, (Double, Double)]() //节点id,最大流命中率，原始命中率
     var number = A.count()
     if (number > 10000) {
@@ -54,7 +59,7 @@ object ExperimentTools {
       val PB = B.take(i).filter(_._3 == true).size / i.toDouble
       val PA = A.take(i).filter(_._3 == true).size / i.toDouble
       result.put(i, (PB.%(3), PA.%(3)))
-      i += 10
+      i += 100
     }
 
     (B.repartition(1), sc.parallelize(result.toSeq))
@@ -91,4 +96,107 @@ object ExperimentTools {
 
     (Boutput.repartition(1), sc.parallelize(result.toSeq))
   }
+
+  def computeIndex(scoreAndLabels: RDD[(Double, Double)]) = {
+    val multimetrics = new MulticlassMetrics(scoreAndLabels)
+   // val multimetrics = new MulticlassMetrics(originalScoreAndLabels)
+    System.out.println("混淆矩阵"+multimetrics.confusionMatrix)
+
+    val metrics = new BinaryClassificationMetrics(scoreAndLabels)
+    //  val metrics=new BinaryClassificationMetrics(originalScoreAndLabels)
+    // Precision by threshold
+    val precision = metrics.precisionByThreshold
+    val precisionMax = precision.map(x => (x._2, x._1)).max
+    println("最大准确率与阈值" + precisionMax)
+    precision.foreach { case (t, p) =>
+      println(s"Threshold: $t, Precision: $p")
+    }
+
+    // Recall by threshold
+    val recall = metrics.recallByThreshold
+    println("该阈值下的召回率" + recall.filter(_._1 == precisionMax._1).max())
+    recall.foreach { case (t, r) =>
+      println(s"Threshold: $t, Recall: $r")
+    }
+
+    // Precision-Recall Curve
+    val PRC = metrics.pr
+
+    // F-measure
+    val f1Score = metrics.fMeasureByThreshold
+    println("最大f1Score" + f1Score.map(x => (x._2, x._1)).max)
+    f1Score.foreach { case (t, f) =>
+      println(s"Threshold: $t, F-score: $f, Beta = 1")
+    }
+
+    val beta = 0.5
+    val fScore = metrics.fMeasureByThreshold(beta)
+    fScore.foreach { case (t, f) =>
+      println(s"Threshold: $t, F-score: $f, Beta = 0.5")
+    }
+
+    // AUPRC
+    val auPRC = metrics.areaUnderPR
+    println("Area under precision-recall curve = " + auPRC)
+
+    // Compute thresholds used in ROC and PR curves
+    val thresholds = precision.map(_._1)
+
+    // ROC Curve
+    val roc = metrics.roc
+
+    // AUROC
+    val auROC = metrics.areaUnderROC
+    println("Area under ROC = " + auROC)
+
+
+
+  }
+
+  def computeIndex2(b:Double, threashold:Double,scoreAndLabels: RDD[(Double, Double)],writer: PrintWriter) = {
+    val metrics = new BinaryClassificationMetrics(scoreAndLabels)
+    val t=0.5
+  //  for(t<-List(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
+      val P_test = scoreAndLabels.filter(_._1 > t).count()
+      val N_test = scoreAndLabels.filter(_._1 <= t).count()
+      val TP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 1)).count()
+      val TN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 0)).count()
+      val FP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 0)).count()
+      val FN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 1)).count()
+      // AUC
+      val auc = metrics.areaUnderROC
+      val precision = TP.toDouble / (TP + FP)
+      val recall = TP.toDouble / (TP + FN)
+      val accuracy = (TP + TN).toDouble / (TP + TN + FN + FP)
+      val f1 = 2 * precision * recall / (precision + recall)
+      //val results=new HashMap[(Double,Double),(Long,Long,Long,Long,Long,Long,Double,Double,Double,Double,Double)]
+      writer.write("\n" + b + "," + threashold+ "," + P_test + "," + N_test + "," + TP + "," + TN + "," + FP + "," + FN + "," + auc + "," + precision + "," + recall + "," + f1 + "," + accuracy)
+      println(" P(test):"+P_test+" N(test):"+N_test+" TP:"+TP+" TN:"+TN+" FP:"+FP+" FN:"+FN+" AUC:"+auc+" precision:"+precision+" recall:"+recall+" f1:"+f1 +" accuracy:"+accuracy )
+  //    println("B为" + b + " 阈值为" + threashold +" accuracy:" + accuracy)
+
+ //   }
+
+  }
+
+  def computeIndex3(b:Double, threashold:Double,originalscoreAndLabels: RDD[(Double, Double)]) = {
+    val metrics = new BinaryClassificationMetrics(originalscoreAndLabels)
+    val t=0.5
+    //  for(t<-List(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
+    val P_test = originalscoreAndLabels.filter(_._1 > t).count()
+    val N_test = originalscoreAndLabels.filter(_._1 <= t).count()
+    val TP = originalscoreAndLabels.filter(x => (x._1 > t && x._2 == 1)).count()
+    val TN = originalscoreAndLabels.filter(x => (x._1 <= t && x._2 == 0)).count()
+    val FP = originalscoreAndLabels.filter(x => (x._1 > t && x._2 == 0)).count()
+    val FN = originalscoreAndLabels.filter(x => (x._1 <= t && x._2 == 1)).count()
+    // AUC
+    val auc = metrics.areaUnderROC
+    val precision = TP.toDouble / (TP + FP)
+    val recall = TP.toDouble / (TP + FN)
+    val accuracy = (TP + TN).toDouble / (TP + TN + FN + FP)
+    val f1 = 2 * precision * recall / (precision + recall)
+    println("OriginalScore: B为"+b+" 阈值为"+threashold+" P(test):"+P_test+" N(test):"+N_test+" TP:"+TP+" TN:"+TN+" FP:"+FP+" FN:"+FN+" AUC:"+auc+" precision:"+precision+" recall:"+recall+" f1:"+f1 +" accuracy:"+accuracy )
+    println("========================")
+  }
+
+
 }

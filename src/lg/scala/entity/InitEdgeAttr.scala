@@ -54,6 +54,7 @@ object InitEdgeAttr {
     toReturn.trade_je = a.trade_je + b.trade_je
     toReturn.w_cohesion=a.w_cohesion+b.w_cohesion
     toReturn.is_Cohesion=a.is_Cohesion||b.is_Cohesion
+    if(toReturn.w_trade>1D) toReturn.w_trade=1.0    //组合时注意税率不同的交易边的组合，这里采用的是求和,若求和大于1.0 置为1
     toReturn
   }
 }
