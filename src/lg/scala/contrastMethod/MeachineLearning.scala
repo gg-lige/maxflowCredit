@@ -1,6 +1,6 @@
 package lg.scala.contrastMethod
 
-import org.apache.spark.ml.classification.LinearSVC
+import org.apache.spark.ml.classification.{LinearSVC, RandomForestClassifier}
 import org.apache.spark.ml.feature.{MinMaxScaler, VectorAssembler}
 import org.apache.spark.sql.SparkSession
 import lg.scala.utils.InputOutputTools
@@ -43,6 +43,10 @@ object MeachineLearning {
       "XB5","XB6","XB7","XB8","XB9","XB10","XB11","XB12","XB13","XB14","XB15","XB16","XB17","XB18","XB19","XB20","XB21","XB22","XB23","XB24","XB25","XB26","XB27","XB28","XB29","XB30","XB31","XB32","XB33","XB34","XB35","XB36","XB37","XB38","XB39",
       "XB40","XB41","XB42","XB43","XB44","XB45","XB46","XB47","XB48","XB49","XB50","XB51","XB52","XB53","XB54","XB55","XB56","XB57","XB58","XB59","XB60","XB61","XB62","XB63","XB64","XB65","XB66")).setOutputCol("features")
     val labelAndFeature_2015 = assembler_2015.transform(FEATURES_DF_2015).select("features")//.withColumnRenamed( "WTBZ" , "label")
+
+    val randomfroest = new RandomForestClassifier().setLabelCol("label").setFeaturesCol("features").setNumTrees(10)
+  //  val labelConvertered =
+
 /*
     val scaler = new MinMaxScaler().setInputCol("features").setOutputCol("scaledFeatures")
     val scalerModel = scaler.fit(labelAndFeature_2015)

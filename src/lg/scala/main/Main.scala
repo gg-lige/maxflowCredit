@@ -13,17 +13,11 @@ package lg.scala.main
 //用的jar3
 
 
-import java.beans.Transient
 import java.io.{File, PrintWriter}
-import java.math.BigDecimal
 
-import lg.scala.contrastMethod.{MeachineLearning, TidalTrust}
 import lg.scala.entity._
 import lg.scala.utils.{CreditGraphTools, ExperimentTools, InputOutputTools, MaxflowCreditTools}
-import org.apache.spark.sql.hive.HiveContext
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.graphx.{Edge, Graph, VertexId}
-import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
+import org.apache.spark.graphx.Graph
 import org.apache.spark.sql.SparkSession
 
 /*rm -rf /opt/wwd/hadoop/tmp
@@ -36,16 +30,16 @@ rm -rf /opt/wwd/hadoop/hdfs/data*/
 object Main {
   def main(args: Array[String]): Unit = {
     @transient
-    val session = SparkSession.builder.appName(this.getClass.getSimpleName).getOrCreate()
-    val sc = session.sparkContext
-    session.conf.set("spark.driver.maxResultSize", "6g")
+    val spark = SparkSession.builder.appName(this.getClass.getSimpleName).getOrCreate()
+    val sc = spark.sparkContext
+    spark.conf.set("spark.driver.maxResultSize", "6g")
 
     if (!InputOutputTools.Exist(sc, "/user/lg/maxflowCredit/startVertices")) {
-      val edge_temp = InputOutputTools.saveE2Oracle_V2HDFS(session)
+      val edge_temp = InputOutputTools.saveE2Oracle_V2HDFS(spark)
     } //结束后在数据库进行操作
 
     if (!InputOutputTools.Exist(sc, "/user/lg/maxflowCredit/initVertices")) {
-      val tpin0 = InputOutputTools.getFromOracle2(session, sc)
+      val tpin0 = InputOutputTools.getFromOracle2(spark, sc)
       println("\n初始TPIN网络 :after construct:  \n节点数：" + tpin0.vertices.count)
       println("边数：" + tpin0.edges.count)
       // 节点数：2063478     边数：3563778
@@ -91,26 +85,27 @@ object Main {
     val beforeSelectProblemOrNotRatio = false
     val afterSelectProblemOrNotRatio = false
     val runMaxflowAlgorithm = true
-    val outputVerifyMode = 4
+    val outputVerifyMode = 1
 
     val runContrastMethod = false
     //----------------------------------------------------
-    val writer = new PrintWriter(new File("/opt/lg/randomFroest7.csv"))
-    writer.write("β,threashold,P_test,N_test,TP,TN,FP,FN,auc,precision,recall,f1,accuracy")
+    val writer = new PrintWriter(new File("/opt/lg/randomFroest3.csv"))
+    //   writer.write("β,threashold,P_test,N_test,TP,TN,FP,FN,auc,precision,recall,f1,accuracy")
     for (m <- List(5)) {
       print("Method " + m + " start------------------------------------------------------------------------------")
       val fixEdgeWeightGraph = InputOutputTools.getFromObjectFile[(Double, Boolean), Double](sc, "/user/lg/maxflowCredit/fixVertices", "/user/lg/maxflowCredit/fixEdges").persist()
+      //(节点id，个体嫌疑分数，问题标识)
       val complianceScore = sc.textFile("/user/lg/maxflowCredit/compliance_score" + m).filter(!_.contains("VERTEXID")).map(_.split(",")).filter(_.length == 3).map(row => (row(0).toLong, (row(1).toDouble, row(2).toInt)))
       //数据库中有标签的
-      val test_2015 = InputOutputTools.getFeatures(session)._2.select("vertexid").rdd.map(row => (row.getAs[java.math.BigDecimal]("vertexid").longValue()))
- /*     val complianceScore = complianceScore_temp.map(_._1).subtract(test_2015).map((_, 1)).join(complianceScore_temp).map(x => (x._1, x._2._2)).map(x => {
-        if ((x._2._2 == 0 && x._2._1 < 0.5)||(x._2._2 == 1 && x._2._1 > 0.5))
-          (x._1, (1-x._2._1, x._2._2))
-        else
-          x
-      }).union(complianceScore_temp.join(test_2015.map((_, 1))).map(x => (x._1, x._2._1)))*/
+      val test_2015 = InputOutputTools.getFeatures(spark)._2.select("vertexid").rdd.map(row => (row.getAs[java.math.BigDecimal]("vertexid").longValue()))
+      /*     val complianceScore = complianceScore_temp.map(_._1).subtract(test_2015).map((_, 1)).join(complianceScore_temp).map(x => (x._1, x._2._2)).map(x => {
+             if ((x._2._2 == 0 && x._2._1 < 0.5)||(x._2._2 == 1 && x._2._1 > 0.5))
+               (x._1, (1-x._2._1, x._2._2))
+             else
+               x
+           }).union(complianceScore_temp.join(test_2015.map((_, 1))).map(x => (x._1, x._2._1)))*/
 
-
+      //个体嫌疑评分赋给fixEdgeWeightGraph
       var selectGraph = Graph(fixEdgeWeightGraph.vertices.leftOuterJoin(complianceScore).map(x => (x._1, (x._2._2.map(_._1).getOrElse(0.0), x._2._2.map(_._2).getOrElse(0)))), fixEdgeWeightGraph.edges)
       /*
           //取子图，只选择节点有纳税信用评分的节点
@@ -175,28 +170,63 @@ object Main {
       //运行最大流算法
       if (runMaxflowAlgorithm) {
         println("\n最大流Start!")
-        val threasholds = List(0D, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,0.9)
-      //  val threasholds = List(0.5, 0.6, 0.7, 0.8, 0.9)
-        val Bs = List(0.1,0.3,0.5,0.7,0.9)
-        //        val threasholds = List(0D)
-        //        val Bs = List(0.1)
+        // val threasholds = List(0D, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9)
+        val threasholds = List(0D, 0.5, 0.9)
+        // val Bs = List(0.1, 0.3, 0.5, 0.7, 0.9)
+        val Bs = List(0D, 0.5, 0.9)
         for (b <- Bs) {
           for (threashold <- threasholds) {
-            val maxflowCredit = MaxflowCreditTools.run3(maxflowSubExtendPair, b, threashold)
+            val maxflowCredit = MaxflowCreditTools.run3(maxflowSubExtendPair, b, threashold) //  （中心节点ID，(1-β)后面，最大流得分，周边各节点流向中间的流量列表）
 
-            //     val company = maxflowCredit.map(x => (x._1, x._3)).join(maxflowSubGraph).map(x => (x._1, x._2._2._2, x._2._1, x._2._2._1))
-            //没有关联企业的企业的最大流分=个体评分
-            val company = complianceScore.join(test_2015.map((_, 1))).map(x => (x._1, x._2._1)).leftOuterJoin(maxflowCredit.map(x => (x._1, x._3))).map(x => (x._1, x._2._1._2, x._2._2.getOrElse(x._2._1._1), x._2._1._1))
-            //   company.filter(x=>(x._2==0&&x._3<0.5)).map(_._1).
-
-            //直接算（1-β）后面的值的
-            //     val company = complianceScore.join(test_2015.map((_,1))).map(x=>(x._1,x._2._1)).join(maxflowCredit.map(x => (x._1, x._2))).map(x => (x._1,x._2._1._2,x._2._2,x._2._1._1))
-            if (outputVerifyMode == 4) {
-              val originalScoreAndLabels = company.map(x => (1 - x._4, x._2.toDouble))
-              val scoreAndLabels = company.map(x => (1 - x._3, x._2.toDouble))
-              ExperimentTools.computeIndex2(b, threashold, scoreAndLabels, writer)
-          //    ExperimentTools.computeIndex3(b, threashold, originalScoreAndLabels)
+            //验证方式一:输出（节点编号、节点个体评分、关联得分、最大流得分，是否为问题企业）
+            if (outputVerifyMode == 1) {
+              val verify = maxflowCredit.map(x => (x._1, (x._2, x._3))).join(complianceScore).map(x => (x._2._2._1, (x._1, x._2._1._1, x._2._1._2, x._2._2._2)))
+              verify.repartition(1).sortByKey(false).map(x => (x._2._1, x._1, x._2._2, x._2._3, x._2._4)).repartition(1).saveAsTextFile("/user/lg/maxflowCredit/verify_" + b + "_" + threashold)
+              println("验证方式一: β_" + b + "threashold_" + threashold + " Done!")
             }
+
+
+            if (outputVerifyMode == 2) {
+              val experimentResult = ExperimentTools.verify2(sc, maxflowCredit.map(x => (x._1, x._3)), maxflowSubGraph.map(x=>(x._1,(x._2._1,if(x._2._2==1)true else false))))
+
+              //InputOutputTools.saveRDDAsFile(sc, maxflowCredit, "/lg/maxflowCredit/o" + i, experimentResult._1, "/lg/maxflowCredit/t" + i)
+              experimentResult._2.repartition(1).sortByKey(true).map(line => {
+                val id = line._1
+                val maxflowScore = line._2._1
+                val originalScore = line._2._2
+                id + "," + maxflowScore + "," + originalScore
+              }
+              ).repartition(1).saveAsTextFile("/lg/maxflowCredit/score_" + b + "_" + threashold)
+
+              println("验证方式二: β_" + b + "threashold_" + threashold + " Done!")
+            }
+
+
+            //验证方式二:将关联评价分数输入至天网查查看,含有关联评价为0的企业
+            if (outputVerifyMode == 3) {
+              val outputV = maxflowCredit.flatMap(v1 => v1._4.map(v2 => (v2._1, (v1._1, v2._2, v2._3)))).leftOuterJoin(maxflowCredit.map(x => (x._1, x._3))).map(x => (x._2._1._1.toString, x._1.toString, x._2._1._2, x._2._2.getOrElse(0D), x._2._1._3))
+              val outputE = maxflowSubExtendPair.flatMap(e1 => e1._2.getAllEdge().map(e2 => ((e2.src.id, e2.dst.id), e1._1))).leftOuterJoin(fixEdgeWeightGraph.edges.map(e => ((e.srcId, e.dstId), e.attr))).map(e => (e._2._1.toString, e._1._1.toString, e._1._2.toString, e._2._2.getOrElse(0D).toString))
+              InputOutputTools.saveMaxflowResultToOracle(outputV, outputE, spark)
+              println("验证方式三 Done!")
+            }
+
+            //验证方式四:计算各项指标
+            if (outputVerifyMode == 4) {
+              //     val company = maxflowCredit.map(x => (x._1, x._3)).join(maxflowSubGraph).map(x => (x._1, x._2._2._2, x._2._1, x._2._2._1))
+              //没有关联企业的企业的最大流分=个体评分
+              val company = complianceScore.join(test_2015.map((_, 1))).map(x => (x._1, x._2._1)).leftOuterJoin(maxflowCredit.map(x => (x._1, x._3))).map(x => (x._1, x._2._1._2, x._2._2.getOrElse(x._2._1._1), x._2._1._1))
+              //直接算（1-β）后面的值的
+              //val company = complianceScore.join(test_2015.map((_,1))).map(x=>(x._1,x._2._1)).join(maxflowCredit.map(x => (x._1, x._2))).map(x => (x._1,x._2._1._2,x._2._2,x._2._1._1))
+
+              val originalScoreAndLabels = company.map(x => (x._4, x._2.toDouble))
+              val scoreAndLabels = company.map(x => (x._3, x._2.toDouble))
+              ExperimentTools.computeIndex2(b, threashold, scoreAndLabels, writer)
+              //  ExperimentTools.computeIndex3(b, threashold, originalScoreAndLabels)
+
+              println("验证方式四 Done!")
+            }
+
+
           }
         }
       }

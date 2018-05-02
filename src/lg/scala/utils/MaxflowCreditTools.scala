@@ -211,11 +211,11 @@ object MaxflowCreditTools {
           vAndInflu.add((src.id, (src.initScore * 100).toLong, flowtemp._3))
           //避免周边节点为100分时，公式中省略了这部分影响
           if (src.initScore == 1) {
-            pairflow += flowtemp._3 * (1 - src.initScore + 0.01)
-            allpairflow += flowtemp._3 / src.initScore * (1 - src.initScore + 0.01)
+            pairflow += flowtemp._3// * (1 - src.initScore + 0.01)
+            allpairflow += flowtemp._3 / src.initScore //* (1 - src.initScore + 0.01)
           } else {
-            pairflow += flowtemp._3 * (1 - src.initScore)
-            allpairflow += flowtemp._3 / src.initScore * (1 - src.initScore)
+            pairflow += flowtemp._3// * (1 - src.initScore)
+            allpairflow += flowtemp._3 / src.initScore //* (1 - src.initScore)
           }
         }
         //加入周边没有初始纳税信用评分的节点
@@ -240,10 +240,12 @@ object MaxflowCreditTools {
               ratio = x._3 * (1 - x._2 / 100D) / allpairflow
           }
           (x._1, x._2, x._3, ratio)
-        } //(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
-        //(vid, returnflow, fusionflow, vAndInfluAndRatio.toList)
+        }
+
+      //  (vid, returnflow, fusionflow, vAndInfluAndRatio.toList)   //vAndInfluAndRatio(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
+        //（中心节点ID，(1-β)后面，最终最大流得分，周边各节点流向中间的流量列表）
            (vid, returnflow, fusionflow, vAndInflu.toList)
-        //（中心节点ID，(1-β)后面，最终最大流得分，周边各节点流向中间的流量列表，）
+
       }
         else{
       //  (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double, Double)]())

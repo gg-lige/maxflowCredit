@@ -376,7 +376,8 @@ object InputOutputTools {
   }
 
 
-  def saveMaxflowResultToOracle(outputV: RDD[(String, String, Long, Double, Double, Double)],
+  def saveMaxflowResultToOracle(//outputV: RDD[(String, String, Long, Double, Double, Double)],
+                                outputV: RDD[(String, String, Long, Double, Double)],
                                 outputE: RDD[(String, String, String, String)],
                                 sqlContext: SparkSession,
                                 vertex_dst: String = "LG_MAXFLOW_VERTEX", edge_dst: String = "LG_MAXFLOW_EDGE"): Unit = {
@@ -388,11 +389,12 @@ object InputOutputTools {
         StructField("V", LongType, true),
         StructField("INITSCORE", LongType, true),
         StructField("FINALSCORE", DoubleType, true),
-        StructField("INFLUENCE", DoubleType, true),
-        StructField("RATIO", DoubleType, true)
+        StructField("INFLUENCE", DoubleType, true)
+     //   StructField("RATIO", DoubleType, true)
       )
     )
-    val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5, p._6)).distinct()
+  //  val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5, p._6)).distinct()
+    val rowRDD1 = outputV.map(p => Row(p._1, p._2, p._2.toLong, p._3, p._4, p._5)).distinct()
     val vertexDataFrame = sqlContext.createDataFrame(rowRDD1, schemaV).repartition(3)
     //  JdbcUtils.saveTable(vertexDataFrame, url, vertex_dst, properties)
     val optionsV = new JDBCOptions(db + ("dbtable" -> vertex_dst))

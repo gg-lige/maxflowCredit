@@ -99,8 +99,8 @@ object ExperimentTools {
 
   def computeIndex(scoreAndLabels: RDD[(Double, Double)]) = {
     val multimetrics = new MulticlassMetrics(scoreAndLabels)
-   // val multimetrics = new MulticlassMetrics(originalScoreAndLabels)
-    System.out.println("混淆矩阵"+multimetrics.confusionMatrix)
+    // val multimetrics = new MulticlassMetrics(originalScoreAndLabels)
+    System.out.println("混淆矩阵" + multimetrics.confusionMatrix)
 
     val metrics = new BinaryClassificationMetrics(scoreAndLabels)
     //  val metrics=new BinaryClassificationMetrics(originalScoreAndLabels)
@@ -150,37 +150,36 @@ object ExperimentTools {
     println("Area under ROC = " + auROC)
 
 
-
   }
 
-  def computeIndex2(b:Double, threashold:Double,scoreAndLabels: RDD[(Double, Double)],writer: PrintWriter) = {
+  def computeIndex2(b: Double, threashold: Double, scoreAndLabels: RDD[(Double, Double)], writer: PrintWriter) = {
     val metrics = new BinaryClassificationMetrics(scoreAndLabels)
-    val t=0.5
-  //  for(t<-List(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
-      val P_test = scoreAndLabels.filter(_._1 > t).count()
-      val N_test = scoreAndLabels.filter(_._1 <= t).count()
-      val TP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 1)).count()
-      val TN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 0)).count()
-      val FP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 0)).count()
-      val FN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 1)).count()
-      // AUC
-      val auc = metrics.areaUnderROC
-      val precision = TP.toDouble / (TP + FP)
-      val recall = TP.toDouble / (TP + FN)
-      val accuracy = (TP + TN).toDouble / (TP + TN + FN + FP)
-      val f1 = 2 * precision * recall / (precision + recall)
-      //val results=new HashMap[(Double,Double),(Long,Long,Long,Long,Long,Long,Double,Double,Double,Double,Double)]
-      writer.write("\n" + b + "," + threashold+ "," + P_test + "," + N_test + "," + TP + "," + TN + "," + FP + "," + FN + "," + auc + "," + precision + "," + recall + "," + f1 + "," + accuracy)
-      println(" P(test):"+P_test+" N(test):"+N_test+" TP:"+TP+" TN:"+TN+" FP:"+FP+" FN:"+FN+" AUC:"+auc+" precision:"+precision+" recall:"+recall+" f1:"+f1 +" accuracy:"+accuracy )
-  //    println("B为" + b + " 阈值为" + threashold +" accuracy:" + accuracy)
+    val t = 0.5
+    //  for(t<-List(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
+    val P_test = scoreAndLabels.filter(_._1 > t).count()
+    val N_test = scoreAndLabels.filter(_._1 <= t).count()
+    val TP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 1)).count()
+    val TN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 0)).count()
+    val FP = scoreAndLabels.filter(x => (x._1 > t && x._2 == 0)).count()
+    val FN = scoreAndLabels.filter(x => (x._1 <= t && x._2 == 1)).count()
+    // AUC
+    val auc = metrics.areaUnderROC
+    val precision = TP.toDouble / (TP + FP)
+    val recall = TP.toDouble / (TP + FN)
+    val accuracy = (TP + TN).toDouble / (TP + TN + FN + FP)
+    val f1 = 2 * precision * recall / (precision + recall)
+    //val results=new HashMap[(Double,Double),(Long,Long,Long,Long,Long,Long,Double,Double,Double,Double,Double)]
+    writer.write("\n" + b + "," + threashold + "," + P_test + "," + N_test + "," + TP + "," + TN + "," + FP + "," + FN + "," + auc + "," + precision + "," + recall + "," + f1 + "," + accuracy)
+    println(" P(test):" + P_test + " N(test):" + N_test + " TP:" + TP + " TN:" + TN + " FP:" + FP + " FN:" + FN + " AUC:" + auc + " precision:" + precision + " recall:" + recall + " f1:" + f1 + " accuracy:" + accuracy)
+    //    println("B为" + b + " 阈值为" + threashold +" accuracy:" + accuracy)
 
- //   }
+    //   }
 
   }
 
-  def computeIndex3(b:Double, threashold:Double,originalscoreAndLabels: RDD[(Double, Double)]) = {
+  def computeIndex3(b: Double, threashold: Double, originalscoreAndLabels: RDD[(Double, Double)]) = {
     val metrics = new BinaryClassificationMetrics(originalscoreAndLabels)
-    val t=0.5
+    val t = 0.5
     //  for(t<-List(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)) {
     val P_test = originalscoreAndLabels.filter(_._1 > t).count()
     val N_test = originalscoreAndLabels.filter(_._1 <= t).count()
@@ -194,7 +193,7 @@ object ExperimentTools {
     val recall = TP.toDouble / (TP + FN)
     val accuracy = (TP + TN).toDouble / (TP + TN + FN + FP)
     val f1 = 2 * precision * recall / (precision + recall)
-    println("OriginalScore: B为"+b+" 阈值为"+threashold+" P(test):"+P_test+" N(test):"+N_test+" TP:"+TP+" TN:"+TN+" FP:"+FP+" FN:"+FN+" AUC:"+auc+" precision:"+precision+" recall:"+recall+" f1:"+f1 +" accuracy:"+accuracy )
+    println("OriginalScore: B为" + b + " 阈值为" + threashold + " P(test):" + P_test + " N(test):" + N_test + " TP:" + TP + " TN:" + TN + " FP:" + FP + " FN:" + FN + " AUC:" + auc + " precision:" + precision + " recall:" + recall + " f1:" + f1 + " accuracy:" + accuracy)
     println("========================")
   }
 
