@@ -152,6 +152,7 @@ object ExperimentTools {
 
   }
 
+  //设为>0.5为有问题    <=0.5 为 无问题
   def computeIndex2(b: Double, threashold: Double, scoreAndLabels: RDD[(Double, Double)], writer: PrintWriter) = {
     val metrics = new BinaryClassificationMetrics(scoreAndLabels)
     val t = 0.5

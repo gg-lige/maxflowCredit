@@ -17,13 +17,15 @@ class InitEdgeAttr(var w_legal: Double, var w_invest: Double, var w_stockholder:
 
 
   //前件路径（除了交易的其他关系组成的路径），无论正反向路径
-  def isAntecedent(weight: Double, justGD: Boolean = false): Boolean = {
+  def isAntecedent(weight:Double): Boolean = {
     if (this.is_Cohesion)
       return false
-    if (!justGD) //不仅仅是股东边
-      (this.w_legal > weight || this.w_invest > weight || this.w_stockholder > weight)
-    else // 仅为股东边
-      (this.w_stockholder > weight)
+    (this.w_legal > weight || this.w_invest > weight || this.w_stockholder > weight)
+
+  }
+
+  def isTrade(): Boolean = {
+    this.w_trade != 0.0
   }
 
 }
@@ -52,9 +54,9 @@ object InitEdgeAttr {
   def combine(a: InitEdgeAttr, b: InitEdgeAttr) = {
     val toReturn = new InitEdgeAttr(a.w_legal + b.w_legal, a.w_invest + b.w_invest, a.w_stockholder + b.w_stockholder, a.w_trade + b.w_trade)
     toReturn.trade_je = a.trade_je + b.trade_je
-    toReturn.w_cohesion=a.w_cohesion+b.w_cohesion
-    toReturn.is_Cohesion=a.is_Cohesion||b.is_Cohesion
-    if(toReturn.w_trade>1D) toReturn.w_trade=1.0    //组合时注意税率不同的交易边的组合，这里采用的是求和,若求和大于1.0 置为1
+    toReturn.w_cohesion = a.w_cohesion + b.w_cohesion
+    toReturn.is_Cohesion = a.is_Cohesion || b.is_Cohesion
+    if (toReturn.w_trade > 1D) toReturn.w_trade = 1.0 //组合时注意税率不同的交易边的组合，这里采用的是求和,若求和大于1.0 置为1
     toReturn
   }
 }

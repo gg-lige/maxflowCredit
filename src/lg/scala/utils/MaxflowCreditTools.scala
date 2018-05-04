@@ -242,14 +242,14 @@ object MaxflowCreditTools {
           (x._1, x._2, x._3, ratio)
         }
 
-      //  (vid, returnflow, fusionflow, vAndInfluAndRatio.toList)   //vAndInfluAndRatio(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
+        (vid, returnflow, fusionflow, vAndInfluAndRatio.toList)   //vAndInfluAndRatio(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
         //（中心节点ID，(1-β)后面，最终最大流得分，周边各节点流向中间的流量列表）
-           (vid, returnflow, fusionflow, vAndInflu.toList)
+       //    (vid, returnflow, fusionflow, vAndInflu.toList)
 
       }
         else{
-      //  (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double, Double)]())
-        (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double)]())
+        (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double, Double)]())
+     //   (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double)]())
       }
     }
   }
