@@ -86,11 +86,12 @@ object CreditGraphTools {
   }
 
   def sendPaths(edge: EdgeContext[Paths, Double, Paths], length: Int) = { //EdgeContext传递的为[VD, ED, A]
-    //得到非纳税人控制的关系链，所以以非纳税人为起点，初始长度中非纳税人为1，纳税人为0
-    //过滤掉非起点 (得到与所需length一样的路径,因为起点必须是非纳税人) 与 非环
-    val filterEdge = edge.srcAttr.filter(_.size == length).filter(!_.map(_._1).contains(edge.dstId))
+    //得到非纳税人控制的关系链，所以以非纳税人为起点，初始长度中非纳税人为1，纳税人为0。过滤掉非起点 (得到与所需length一样的路径,因为起点必须是非纳税人) 与 非环
+    val filterEdge = edge.srcAttr.filter(_.size == length).filter(!_.map(_._1).contains(edge.dstId)) //过滤源点属性（长度为length，非环）
+    val filterEdge2 = edge.dstAttr.filter(_.size ==1)  //过滤终点属性（长度为1）
 
-    if (filterEdge.size > 0)
+    if ((length!=1 && filterEdge.size > 0 && filterEdge2.size == 0 )||
+      (length == 1 && filterEdge.size > 0))
     //向终点发送控制人关系路径集合
       edge.sendToDst(filterEdge.map(_ ++ Seq((edge.dstId, edge.attr))))
   }
@@ -156,7 +157,7 @@ object CreditGraphTools {
   }
 
   //要求亲密度关联节点的重叠度为2（严格版）  两层for 循环
-  def reComputeWeight(d: Seq[(VertexId, mutable.Map[Long, Double])], degree: Int = 1) = {
+  def reComputeWeight(d: Seq[(VertexId, mutable.Map[Long, Double])], degree: Int = 2) = {
     val overlap = d
     //until 返回所有小于但不包括上限的数字。而to是返回包括上线的数字
     val result =
@@ -180,7 +181,7 @@ object CreditGraphTools {
     result.flatten.filter(!_.isEmpty).map(_.get).flatten
   }
 
-  def removeDegreeZero[VD: ClassTag, ED: ClassTag](tpin: Graph[VD, ED]): Graph[VD, ED] = {
+  def remove0Degree[VD: ClassTag, ED: ClassTag](tpin: Graph[VD, ED]): Graph[VD, ED] = {
     val degreesRDD = tpin.degrees.cache()
     var preproccessedGraph = tpin.
       outerJoinVertices(degreesRDD)((vid, vattr, degreesVar) => (vattr, degreesVar.getOrElse(0))).
@@ -193,6 +194,7 @@ object CreditGraphTools {
       }
     preproccessedGraph
   }
+
 
 
   /**
@@ -209,10 +211,10 @@ object CreditGraphTools {
       triplet.attr.isAntecedent(weight)).mapEdges(edge => Seq(edge.attr.w_legal, edge.attr.w_invest, edge.attr.w_stockholder).max).cache() //1.
 
     //信息（公司id,Map(自然人id,权重)）：此处无法使用反向获取路径，,即使用正向获取路径，要求源点为人 ，maxIteration表示前件路径最长长度为3
-    val messageOfControls = CreditGraphTools.getPath(removeDegreeZero(initialGraph), sendPaths, reducePaths, maxIteration = 3).mapValues { lists =>
+    val messageOfControls = CreditGraphTools.getPath(remove0Degree(initialGraph), sendPaths, reducePaths, maxIteration = 3).mapValues { lists =>
       val result = mutable.HashMap[Long, Double]()
       lists.filter(_.size > 1).foreach { case list =>
-        val influ = list.map(_._2).min //2.
+        val influ = list.map(_._2).min//.reduce(_*_)/list.length.toDouble//2.
         result.update(list.head._1, result.getOrElse(list.head._1, influ).max(influ)) //3.
       }
       result
@@ -229,17 +231,21 @@ object CreditGraphTools {
     //添加新的亲密度关系边（list 为）
     val newCohesionE = moveMessageOfControls.flatMap { case (vid, list) => CreditGraphTools.reComputeWeight(list) }.
       distinct.reduceByKey(_.min(_)) //再次筛选,因为会出现两次的结果小数位数不同的情况
+    //1.等比归一化
     val cohe_max = newCohesionE.map(_._2).max
     val cohe_min = newCohesionE.map(_._2).min
 
-    val c=newCohesionE.count
-    val bcnewCohesionE= newCohesionE.collect
+    //2.超过百分比归一化
+    val allSum=newCohesionE.count.toDouble
+    val weightTemp=newCohesionE.map(x=>(x._2,1)).reduceByKey(_+_).sortByKey().collect
+    val weightMap =weightTemp.map(e=>(e._1,weightTemp.filter(_._1<e._1).map(_._2).sum/allSum)).toMap
 
-     val newCohesionEdges= newCohesionE.map { case ((src, dst), weight) =>
+
+    val newCohesionEdges= newCohesionE.map { case ((src, dst), weight) =>
       val edgeAttr = InitEdgeAttr()
       edgeAttr.is_Cohesion = true
-      //edgeAttr.w_cohesion = (weight/(cohe_max-cohe_min)).formatted("%.3f").toDouble
-      edgeAttr.w_cohesion = (bcnewCohesionE.filter(x=>(x._2<weight)).length/c).toDouble.formatted("%.3f").toDouble
+       edgeAttr.w_cohesion = (weight/(cohe_max-cohe_min)).formatted("%.3f").toDouble
+     // edgeAttr.w_cohesion = weightMap.getOrElse(weight,0D)
 
       Edge(src, dst, edgeAttr)
     }

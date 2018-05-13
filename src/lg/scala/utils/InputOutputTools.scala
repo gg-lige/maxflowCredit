@@ -276,8 +276,8 @@ object InputOutputTools {
     //计算边表
     //法人边正反影响融合
     val fr = FR_DF.select("SRC", "DST", "W_LEGAL").
-      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
-      .reduceByKey((a, b) => {
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue())).
+      reduceByKey((a, b) => {
         val f_positive = a * b //正向融合因子
         val f_inverse = (1 - a) * (1 - b)
         f_positive / (f_positive + f_inverse)
@@ -288,8 +288,8 @@ object InputOutputTools {
 
     //投资边正反影响融合
     val tz = TZ_DF.select("SRC", "DST", "W_INVEST").
-      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
-      .reduceByKey((a, b) => {
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue())).
+      reduceByKey((a, b) => {
         val f_positive = a * b
         val f_inverse = (1 - a) * (1 - b)
         f_positive / (f_positive + f_inverse)
@@ -300,8 +300,8 @@ object InputOutputTools {
 
     //股东边正反影响融合
     val gd = GD_DF.select("SRC", "DST", "W_STOCKHOLDER").
-      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue()))
-      .reduceByKey((a, b) => {
+      rdd.map(row => ((row.getAs[BigDecimal](0).longValue(), row.getAs[BigDecimal](1).longValue()), row.getAs[BigDecimal](2).doubleValue())).
+      reduceByKey((a, b) => {
         val f_positive = a * b
         val f_inverse = (1 - a) * (1 - b)
         f_positive / (f_positive + f_inverse)
@@ -336,7 +336,7 @@ object InputOutputTools {
       ((row.getAs[BigDecimal]("xf_VERTEXID").longValue(), row.getAs[BigDecimal]("gf_VERTEXID").longValue()), eattr)
     }
 
-    // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环,交易边选择此为避免出现<0的边
+    // 合并控制关系边、投资关系边和交易关系边（类型为三元组逐项求和）,去除自环,交易边选择此为避免出现<0的边，可能存在 交易边不是双向边
     val ALL_EDGE = fr.union(tz).union(gd).union(jy.filter(x => x._2.w_trade > 0.01)).
       reduceByKey(InitEdgeAttr.combine).filter(edge => edge._1._1 != edge._1._2).
       map(edge => Edge(edge._1._1, edge._1._2, edge._2)).

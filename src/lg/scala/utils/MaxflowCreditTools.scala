@@ -18,6 +18,7 @@ object MaxflowCreditTools {
   /**
     * 修正图上的边权值（DS信息融合等原理）
     */
+
   def fixEdgeWeight(tpin1: Graph[VertexAttr, EdgeAttr]) = {
     //  val edgetemp = tpin1.mapEdges(e => (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade) / (e.attr.w_cohesion * e.attr.w_invest * e.attr.w_stockholder * e.attr.w_trade + (1 - e.attr.w_cohesion) * (1 - e.attr.w_invest) * (1 - e.attr.w_stockholder) * (1 - e.attr.w_trade))).edges
     val edgetemp = tpin1.mapEdges(e => EdgeAttr.fusion(e)).edges
@@ -33,6 +34,26 @@ object MaxflowCreditTools {
  */
   }
 
+  type Paths = mutable.Set[(VertexId, Double, Double)] //源节点id,源节点权值，边权值
+
+ /* def extendSubgraph1(fixEdgeWeightGraph: Graph[Double, Double],
+                      selectTopN: Int,
+                      maxflowSubGraph: RDD[(Long, (Double, Int))]): RDD[(VertexId, MaxflowGraph)] = {
+
+    val initialGraph = fixEdgeWeightGraph.cache()
+    var pathlength = 0
+    while (pathlength<3)
+    val vertices = initialGraph.aggregateMessages[Paths](edge =>
+      edge.sendToDst(mutable.Set((edge.srcId, edge.srcAttr,edge.attr))),
+      _++_
+    )
+
+
+
+
+  }
+
+*/
   /**
     * 节点上存储子图【选用这个】
     */
@@ -48,10 +69,21 @@ object MaxflowCreditTools {
 
     val neighborVertex1 = neighbor.map { case (vid, vattr) =>
       val newattr = vattr.toSeq.filter(_._5 == true)
-      if (newattr.size > selectTopN)
-        (vid, newattr.sortBy(_._3)(Ordering[Double].reverse).slice(0, selectTopN).toSet)
-      else
+      val badNum = newattr.filter(_._4 > 0.5).size
+      val badNodes = newattr.filter(_._4 > 0.5).sortBy(_._3)(Ordering[Double].reverse)
+
+      val goodNum = newattr.filter(_._4 <= 0.5).size
+      val goodNodes = newattr.filter(_._4 <= 0.5).sortBy(_._3)(Ordering[Double].reverse)
+
+      if (badNum <= selectTopN / 2 && goodNum <= selectTopN / 2)
         (vid, newattr)
+      else if (badNum < selectTopN / 2 && goodNum > selectTopN / 2)
+        (vid, badNodes.slice(0, badNum).union(goodNodes.slice(0, selectTopN / 2)).toSet)
+      else if (badNum > selectTopN / 2 && goodNum < selectTopN / 2)
+        (vid, badNodes.slice(0, selectTopN / 2).union(goodNodes.slice(0, goodNum)).toSet)
+      else
+        (vid, badNodes.slice(0, selectTopN / 2).union(goodNodes.slice(0, selectTopN / 2)).toSet)
+
     }.cache()
 
     val neighborVertex = neighbor.map { case (vid, vattr) =>
@@ -192,7 +224,7 @@ object MaxflowCreditTools {
     * 计算最大流分数
     */
 
-  def run3(maxflowSubExtendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double,threashold:Double) = {
+  def run3(maxflowSubExtendPair: RDD[(VertexId, MaxflowGraph)], lambda: Double, threashold: Double) = {
     maxflowSubExtendPair.map { case (vid, vGraph) =>
       var vAndInflu: Set[(VertexId, Long, Double)] = Set() //(周边节点ID,周边节点初始纳税评分，单条传递分)
     var pairflow = 0D
@@ -204,17 +236,17 @@ object MaxflowCreditTools {
       //    val src = vGraph.getGraph().keySet.filter(_.id == 936680).head
       //周边节点及其传递的最大流值
       var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
-      if (vGraph.getGraph().size>1){
+      if (vGraph.getGraph().size > 1) {
         for (src <- vGraph.getGraph().keySet.-(dst).filter(_.initScore != 0)) {
           //调用最大流算法计算pair节点对内所有节点对其传递值
-          val flowtemp = MaxflowCreditTools.maxflowNotGraphX(vGraph, src, dst,threashold)
+          val flowtemp = MaxflowCreditTools.maxflowNotGraphX(vGraph, src, dst, threashold)
           vAndInflu.add((src.id, (src.initScore * 100).toLong, flowtemp._3))
           //避免周边节点为100分时，公式中省略了这部分影响
           if (src.initScore == 1) {
-            pairflow += flowtemp._3// * (1 - src.initScore + 0.01)
+            pairflow += flowtemp._3 // * (1 - src.initScore + 0.01)
             allpairflow += flowtemp._3 / src.initScore //* (1 - src.initScore + 0.01)
           } else {
-            pairflow += flowtemp._3// * (1 - src.initScore)
+            pairflow += flowtemp._3 // * (1 - src.initScore)
             allpairflow += flowtemp._3 / src.initScore //* (1 - src.initScore)
           }
         }
@@ -242,14 +274,14 @@ object MaxflowCreditTools {
           (x._1, x._2, x._3, ratio)
         }
 
-        (vid, returnflow, fusionflow, vAndInfluAndRatio.toList)   //vAndInfluAndRatio(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
+        (vid, returnflow, fusionflow, vAndInfluAndRatio.toList) //vAndInfluAndRatio(周边节点ID,周边节点初始纳税评分，单条传递分，单条传递分占总传递分的比值)
         //（中心节点ID，(1-β)后面，最终最大流得分，周边各节点流向中间的流量列表）
-       //    (vid, returnflow, fusionflow, vAndInflu.toList)
+        //    (vid, returnflow, fusionflow, vAndInflu.toList)
 
       }
-        else{
+      else {
         (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double, Double)]())
-     //   (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double)]())
+        //   (vid, 0D, lambda * dst.initScore, List[(VertexId, Long, Double)]())
       }
     }
   }
@@ -265,7 +297,7 @@ object MaxflowCreditTools {
       var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
       for (src <- vGraph.getGraph().keySet.-(dst)) {
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
-        val flowtemp = maxflowNotGraphX(vGraph, src, dst,1)
+        val flowtemp = maxflowNotGraphX(vGraph, src, dst, 1)
         pairflow += flowtemp._3 * (1 - src.initScore)
       }
       val fusionflow = lambda * dst.initScore + (1 - lambda) * pairflow
@@ -284,7 +316,7 @@ object MaxflowCreditTools {
       var dst = vGraph.getGraph().keySet.filter(_.id == vid).head
       for (src <- vGraph.getGraph().keySet.-(dst)) {
         //调用最大流算法计算pair节点n步之内所有节点对其传递值
-        val flowtemp = maxflowNotGraphX(vGraph, src, dst,1)
+        val flowtemp = maxflowNotGraphX(vGraph, src, dst, 1)
         allflow += flowtemp._3
       }
       (vid, allflow)
@@ -299,7 +331,7 @@ object MaxflowCreditTools {
    var dst = vGraph.getGraph().keySet.filter(_.id == 6L).head
    */
 
-  def maxflowNotGraphX(vGraph0: MaxflowGraph, src: MaxflowVertexAttr, dst: MaxflowVertexAttr,threashold:Double): (MaxflowVertexAttr, MaxflowVertexAttr, Double) = {
+  def maxflowNotGraphX(vGraph0: MaxflowGraph, src: MaxflowVertexAttr, dst: MaxflowVertexAttr, threashold: Double): (MaxflowVertexAttr, MaxflowVertexAttr, Double) = {
     var fs = src.initScore
     //重新构图，注意引用问题，否则会导致在相同的vGraph上进行修改
     var vGraph = new MaxflowGraph
@@ -314,7 +346,7 @@ object MaxflowCreditTools {
     while (fs > 0) {
       println(src.id)
       println("---->" + fs)
-      val shortest = bfs4(src, dst, vGraph, fs,threashold)
+      val shortest = bfs4(src, dst, vGraph, fs, threashold)
       println(shortest)
       println()
       if (shortest != empty) {
@@ -342,7 +374,7 @@ object MaxflowCreditTools {
 
   //===========================================================================================================================================
   //第四种最大流方法【最终正确版本】
-  def bfs4(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double,threashold:Double): List[MaxflowVertexAttr] = {
+  def bfs4(src: MaxflowVertexAttr, dst: MaxflowVertexAttr, vGraph: MaxflowGraph, fs: Double, threashold: Double): List[MaxflowVertexAttr] = {
     //  重新构图
     var residual = new MaxflowGraph
     vGraph.getAllEdge().foreach { case e =>

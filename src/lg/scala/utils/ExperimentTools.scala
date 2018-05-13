@@ -45,8 +45,8 @@ object ExperimentTools {
     /**
       * B为最大流计算排名，A为原始纳税信用等级排名;前100、前200、前300、…中标志为true
       */
-    val A = maxflowSubGraph.map(v => (v._2._1, (v._2._2, v._1))).repartition(1).sortByKey(true).map(v => (v._2._2, v._1, v._2._1))
-    val B = maxflowCredit.join(maxflowSubGraph).map(x => (x._2._1, (x._1, x._2._2._2))).repartition(1).sortByKey(true).map(x => (x._2._1, x._1, x._2._2))
+    val A = maxflowSubGraph.map(v => (v._2._1, (v._2._2, v._1))).repartition(1).sortByKey(false).map(v => (v._2._2, v._1, v._2._1))
+    val B = maxflowCredit.join(maxflowSubGraph).map(x => (x._2._1, (x._1, x._2._2._2))).repartition(1).sortByKey(false).map(x => (x._2._1, x._1, x._2._2))
     //按100名波动清况
     var i = 100
     var result = HashMap[VertexId, (Double, Double)]() //节点id,最大流命中率，原始命中率
@@ -175,7 +175,6 @@ object ExperimentTools {
     //    println("B为" + b + " 阈值为" + threashold +" accuracy:" + accuracy)
 
     //   }
-
   }
 
   def computeIndex3(b: Double, threashold: Double, originalscoreAndLabels: RDD[(Double, Double)]) = {
