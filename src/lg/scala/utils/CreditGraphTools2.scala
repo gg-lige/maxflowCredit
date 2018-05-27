@@ -230,8 +230,8 @@ object CreditGraphTools2 {
 
             if (!result.contains((perlist.head._1, perlist.last._1)))
               result.put((perlist.head._1, perlist.last._1), (influ, length))
-            else (result.get((perlist.head._1, perlist.last._1)).get._2 > length) //3.同源终时， 取最短路径
-            result.update((perlist.head._1, perlist.last._1), (influ, length))
+            else if (result.contains((perlist.head._1, perlist.last._1)) && result.get((perlist.head._1, perlist.last._1)).get._2 > length) //3.同源终时， 取最短路径
+              result.update((perlist.head._1, perlist.last._1), (influ, length))
           }
           result.map(x => (x._1, x._2._1)).toSeq
       }.filter(_._2.size > 0).join(tpinFromObject.vertices.filter(_._2.isNSR == false)).map(x => (x._1, x._2._1)) //保证链均在自然人上
@@ -253,7 +253,7 @@ object CreditGraphTools2 {
       result.flatten.filter(!_.isEmpty).map(_.get)
     }
 
-    val newCohesionE = allmessageOfcontrols.map { case (vid, lists) => computeCohesionWeight(vid, lists) }.flatMap(_.toList).reduceByKey(_ + _).subtractByKey(initialGraph.edges.map(e => ((e.srcId, e.dstId),1)))
+    val newCohesionE = allmessageOfcontrols.map { case (vid, lists) => computeCohesionWeight(vid, lists) }.flatMap(_.toList).reduceByKey(_ + _).subtractByKey(initialGraph.edges.map(e => ((e.srcId, e.dstId), 1)))
 
     //1.等比归一化
     val cohe_max = newCohesionE.map(_._2).max
